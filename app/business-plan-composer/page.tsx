@@ -176,7 +176,7 @@ export default function BusinessPlanComposer() {
         console.error('Error loading saved data:', error);
       }
     }
-  }, []);
+  }, [topics, topicQuestions]);
 
   const renderProgressDonut = (progress: number, size: "sm" | "md" = "md") => {
     const radius = size === "sm" ? 12 : 16;

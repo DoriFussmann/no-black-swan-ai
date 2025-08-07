@@ -58,7 +58,7 @@ export default function InvestorsVault() {
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">Coming Soon</h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              We're developing the most secure investor relations platform powered by AI. 
+              We&apos;re developing the most secure investor relations platform powered by AI. 
               This tool will provide comprehensive investor relations with secure document sharing, due diligence automation, and investor communication tools.
             </p>
             <Link 

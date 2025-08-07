@@ -58,7 +58,7 @@ export default function FpaTools() {
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">Coming Soon</h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              We're building the most comprehensive FP&A tools powered by AI. 
+              We&apos;re building the most comprehensive FP&A tools powered by AI. 
               This suite will include automated reporting, KPI tracking, predictive analytics, and advanced financial planning capabilities.
             </p>
             <Link 

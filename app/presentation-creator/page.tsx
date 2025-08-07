@@ -58,7 +58,7 @@ export default function PresentationCreator() {
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">Coming Soon</h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              We're creating the most intelligent presentation creator powered by AI. 
+              We&apos;re creating the most intelligent presentation creator powered by AI. 
               This tool will help you generate professional presentations with AI-powered content creation, design templates, and automated slide generation.
             </p>
             <Link 

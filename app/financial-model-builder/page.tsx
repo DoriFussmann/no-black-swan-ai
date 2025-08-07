@@ -58,7 +58,7 @@ export default function FinancialModelBuilder() {
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">Coming Soon</h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              We're developing the most advanced financial model builder powered by AI. 
+              We&apos;re developing the most advanced financial model builder powered by AI. 
               This tool will help you create sophisticated financial models with automated calculations, scenario analysis, and real-time forecasting.
             </p>
             <Link 
