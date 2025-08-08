@@ -721,12 +721,12 @@ export default function BusinessPlanComposer() {
           <div className="h-full flex flex-col">
             {/* Chat Header */}
             <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Business Plan Compiler</h2>
-                  <p className="text-gray-600 mt-2">Answer questions to build your business plan</p>
-                </div>
-                <div className="flex items-center space-x-3">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Business Plan Compiler</h2>
+                <p className="text-gray-600 mt-2">Answer questions to build your business plan</p>
+                
+                {/* Action Buttons */}
+                <div className="flex items-center space-x-3 mt-4">
                   {isSaving && (
                     <div className="flex items-center text-sm text-gray-500">
                       <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-500 mr-2"></div>
@@ -755,13 +755,13 @@ export default function BusinessPlanComposer() {
                       
                       alert("Default data has been loaded successfully!");
                     }}
-                    className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors duration-200 text-sm font-medium mr-2"
+                    className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors duration-200 text-sm font-medium"
                   >
                     Default
                   </button>
                   <button
                     onClick={handleReset}
-                    className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200 text-sm font-medium mr-2"
+                    className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200 text-sm font-medium"
                   >
                     Reset
                   </button>
