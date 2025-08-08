@@ -50,7 +50,7 @@ export default function BusinessPlanComposer() {
     },
     {
       id: "gtm-strategy",
-      title: "Go-To-Market (GTM) Strategy",
+      title: "GTM Strategy",
       progress: 0,
       summary: ""
     },
@@ -179,19 +179,19 @@ export default function BusinessPlanComposer() {
   }, [topics, topicQuestions]);
 
   const renderProgressDonut = (progress: number, size: "sm" | "md" = "md") => {
-    const radius = size === "sm" ? 12 : 16;
-    const strokeWidth = size === "sm" ? 2 : 3;
+    const radius = size === "sm" ? 16 : 18;
+    const strokeWidth = size === "sm" ? 4 : 5;
     const circumference = 2 * Math.PI * radius;
     const strokeDasharray = circumference;
     const strokeDashoffset = circumference - (progress / 100) * circumference;
 
     return (
       <div className="relative">
-        <svg className="transform -rotate-90" width={size === "sm" ? 28 : 36} height={size === "sm" ? 28 : 36}>
+        <svg className="transform -rotate-90" width={size === "sm" ? 36 : 44} height={size === "sm" ? 36 : 44}>
           {/* Background circle */}
           <circle
-            cx={size === "sm" ? 14 : 18}
-            cy={size === "sm" ? 14 : 18}
+            cx={size === "sm" ? 18 : 22}
+            cy={size === "sm" ? 18 : 22}
             r={radius}
             stroke="currentColor"
             strokeWidth={strokeWidth}
@@ -200,8 +200,8 @@ export default function BusinessPlanComposer() {
           />
           {/* Progress circle */}
           <circle
-            cx={size === "sm" ? 14 : 18}
-            cy={size === "sm" ? 14 : 18}
+            cx={size === "sm" ? 18 : 22}
+            cy={size === "sm" ? 18 : 22}
             r={radius}
             stroke="currentColor"
             strokeWidth={strokeWidth}
@@ -213,7 +213,7 @@ export default function BusinessPlanComposer() {
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className={`font-medium ${size === "sm" ? "text-xs" : "text-sm"}`}>
+          <span className={`font-medium ${size === "sm" ? "text-[10px]" : "text-xs"}`}>
             {progress}%
           </span>
         </div>
@@ -247,39 +247,272 @@ export default function BusinessPlanComposer() {
     const answeredQuestions = questions.filter(q => q.answer.trim());
     if (answeredQuestions.length === 0) return "";
 
-    // Generate a professional summary based on the topic
+    // Collect all user answers into a comprehensive text block
+    const allAnswers = answeredQuestions.map(q => q.answer.trim()).join(" ");
+    
+    // Generate a professional, coherent summary based on the topic and collected answers
     const topic = topics.find(t => t.id === topicId);
     if (!topic) return "";
 
+    // Process the collected answers to create a professional summary
+    return processAnswersIntoSummary(topicId, allAnswers, answeredQuestions);
+  };
+
+  const processAnswersIntoSummary = (topicId: string, allAnswers: string, questions: Question[]) => {
+    // Extract key information from answers
+    const extractInfo = (questionId: string) => {
+      const question = questions.find(q => q.id === questionId);
+      return question?.answer.trim() || "";
+    };
+
     switch (topicId) {
       case "business-overview":
-        const companyName = questions.find(q => q.id === "company-name")?.answer || "Your Company";
-        const businessModel = questions.find(q => q.id === "business-model")?.answer || "your business model";
-        const mission = questions.find(q => q.id === "mission")?.answer || "your mission";
-        return `${companyName} operates using ${businessModel}. Our mission is ${mission}.`;
+        const companyName = extractInfo("company-name");
+        const businessModel = extractInfo("business-model");
+        const mission = extractInfo("mission");
+        
+        if (!companyName && !businessModel && !mission) {
+          return "Please provide information about your company to generate a business overview.";
+        }
+
+        // Create a coherent, professional summary
+        let summary = "";
+        
+        if (companyName) {
+          summary += `${companyName} `;
+        } else {
+          summary += "Our company ";
+        }
+        
+        if (businessModel) {
+          // Clean up the business model text to avoid awkward concatenations
+          let cleanBusinessModel = businessModel.trim();
+          
+          // Remove common prefixes that might cause awkward concatenations
+          if (cleanBusinessModel.toLowerCase().startsWith("we provide ")) {
+            cleanBusinessModel = cleanBusinessModel.substring(11); // Remove "We provide "
+          }
+          if (cleanBusinessModel.toLowerCase().startsWith("we offer ")) {
+            cleanBusinessModel = cleanBusinessModel.substring(9); // Remove "We offer "
+          }
+          if (cleanBusinessModel.toLowerCase().startsWith("we deliver ")) {
+            cleanBusinessModel = cleanBusinessModel.substring(11); // Remove "We deliver "
+          }
+          
+          summary += `provides ${cleanBusinessModel}. `;
+        } else {
+          summary += "provides innovative solutions to meet market needs. ";
+        }
+        
+        if (mission) {
+          // Clean up the mission text to avoid awkward concatenations
+          let cleanMission = mission.trim();
+          
+          // Remove common prefixes that might cause awkward concatenations
+          if (cleanMission.toLowerCase().startsWith("to ")) {
+            cleanMission = cleanMission.substring(3); // Remove "To " prefix
+          }
+          if (cleanMission.toLowerCase().startsWith("we ")) {
+            cleanMission = cleanMission.substring(3); // Remove "We " prefix
+          }
+          
+          summary += `Our mission is to ${cleanMission}. `;
+        } else {
+          summary += "We are committed to delivering exceptional value to our customers. ";
+        }
+        
+        summary += "We focus on sustainable growth, operational excellence, and market leadership to ensure long-term success.";
+        
+        return summary;
       
       case "market-summary":
-        const targetMarket = questions.find(q => q.id === "target-market")?.answer || "your target market";
-        const marketSize = questions.find(q => q.id === "market-size")?.answer || "significant market opportunity";
-        return `Our target market consists of ${targetMarket}. The market size represents ${marketSize}.`;
+        const targetMarket = extractInfo("target-market");
+        const marketSize = extractInfo("market-size");
+        
+        if (!targetMarket && !marketSize) {
+          return "Please provide information about your target market to generate a market summary.";
+        }
+
+        let marketSummary = "Our market strategy focuses on ";
+        
+        if (targetMarket) {
+          // Clean up target market text
+          let cleanTargetMarket = targetMarket.trim();
+          if (cleanTargetMarket.toLowerCase().startsWith("we target ")) {
+            cleanTargetMarket = cleanTargetMarket.substring(10);
+          }
+          if (cleanTargetMarket.toLowerCase().startsWith("our target ")) {
+            cleanTargetMarket = cleanTargetMarket.substring(11);
+          }
+          marketSummary += `${cleanTargetMarket}. `;
+        } else {
+          marketSummary += "identifying and serving our target customer segments. ";
+        }
+        
+        if (marketSize) {
+          // Clean up market size text
+          let cleanMarketSize = marketSize.trim();
+          if (cleanMarketSize.toLowerCase().startsWith("the market is ")) {
+            cleanMarketSize = cleanMarketSize.substring(14);
+          }
+          if (cleanMarketSize.toLowerCase().startsWith("we estimate ")) {
+            cleanMarketSize = cleanMarketSize.substring(12);
+          }
+          marketSummary += `The market opportunity represents ${cleanMarketSize}. `;
+        } else {
+          marketSummary += "We have identified significant growth potential in our target markets. ";
+        }
+        
+        marketSummary += "Our comprehensive market analysis supports our strategic initiatives and growth objectives.";
+        
+        return marketSummary;
       
       case "products-services":
-        const mainProduct = questions.find(q => q.id === "main-product")?.answer || "our main product";
-        const uniqueValue = questions.find(q => q.id === "unique-value")?.answer || "our unique value proposition";
-        return `Our main product is ${mainProduct}. What makes us unique is ${uniqueValue}.`;
+        const mainProduct = extractInfo("main-product");
+        const uniqueValue = extractInfo("unique-value");
+        
+        if (!mainProduct && !uniqueValue) {
+          return "Please provide information about your products and services to generate a summary.";
+        }
+
+        let productSummary = "Our core offering includes ";
+        
+        if (mainProduct) {
+          // Clean up main product text
+          let cleanMainProduct = mainProduct.trim();
+          if (cleanMainProduct.toLowerCase().startsWith("we provide ")) {
+            cleanMainProduct = cleanMainProduct.substring(11);
+          }
+          if (cleanMainProduct.toLowerCase().startsWith("we offer ")) {
+            cleanMainProduct = cleanMainProduct.substring(9);
+          }
+          if (cleanMainProduct.toLowerCase().startsWith("our main product is ")) {
+            cleanMainProduct = cleanMainProduct.substring(20);
+          }
+          productSummary += `${cleanMainProduct}. `;
+        } else {
+          productSummary += "innovative solutions that address market needs. ";
+        }
+        
+        if (uniqueValue) {
+          // Clean up unique value text
+          let cleanUniqueValue = uniqueValue.trim();
+          if (cleanUniqueValue.toLowerCase().startsWith("what sets us apart is ")) {
+            cleanUniqueValue = cleanUniqueValue.substring(22);
+          }
+          if (cleanUniqueValue.toLowerCase().startsWith("our unique value is ")) {
+            cleanUniqueValue = cleanUniqueValue.substring(20);
+          }
+          if (cleanUniqueValue.toLowerCase().startsWith("we differentiate through ")) {
+            cleanUniqueValue = cleanUniqueValue.substring(25);
+          }
+          productSummary += `What sets us apart is ${cleanUniqueValue}. `;
+        } else {
+          productSummary += "We differentiate ourselves through superior quality and customer service. ";
+        }
+        
+        productSummary += "This positioning enables us to deliver exceptional value while maintaining competitive advantages.";
+        
+        return productSummary;
       
       case "gtm-strategy":
-        const marketingChannels = questions.find(q => q.id === "marketing-channels")?.answer || "various marketing channels";
-        const pricingStrategy = questions.find(q => q.id === "pricing-strategy")?.answer || "competitive pricing";
-        return `We will reach customers through ${marketingChannels}. Our pricing strategy is ${pricingStrategy}.`;
+        const marketingChannels = extractInfo("marketing-channels");
+        const pricingStrategy = extractInfo("pricing-strategy");
+        
+        if (!marketingChannels && !pricingStrategy) {
+          return "Please provide information about your go-to-market strategy to generate a summary.";
+        }
+
+        let gtmSummary = "Our go-to-market approach utilizes ";
+        
+        if (marketingChannels) {
+          // Clean up marketing channels text
+          let cleanMarketingChannels = marketingChannels.trim();
+          if (cleanMarketingChannels.toLowerCase().startsWith("we use ")) {
+            cleanMarketingChannels = cleanMarketingChannels.substring(7);
+          }
+          if (cleanMarketingChannels.toLowerCase().startsWith("our channels include ")) {
+            cleanMarketingChannels = cleanMarketingChannels.substring(21);
+          }
+          if (cleanMarketingChannels.toLowerCase().startsWith("we leverage ")) {
+            cleanMarketingChannels = cleanMarketingChannels.substring(12);
+          }
+          gtmSummary += `${cleanMarketingChannels} to reach our target customers. `;
+        } else {
+          gtmSummary += "multiple channels to maximize market reach and customer acquisition. ";
+        }
+        
+        if (pricingStrategy) {
+          // Clean up pricing strategy text
+          let cleanPricingStrategy = pricingStrategy.trim();
+          if (cleanPricingStrategy.toLowerCase().startsWith("our pricing is ")) {
+            cleanPricingStrategy = cleanPricingStrategy.substring(15);
+          }
+          if (cleanPricingStrategy.toLowerCase().startsWith("we charge ")) {
+            cleanPricingStrategy = cleanPricingStrategy.substring(10);
+          }
+          if (cleanPricingStrategy.toLowerCase().startsWith("our strategy is ")) {
+            cleanPricingStrategy = cleanPricingStrategy.substring(16);
+          }
+          gtmSummary += `Our pricing strategy is ${cleanPricingStrategy}. `;
+        } else {
+          gtmSummary += "We employ competitive pricing to optimize revenue growth. ";
+        }
+        
+        gtmSummary += "This comprehensive approach enables us to achieve rapid market penetration and sustainable growth.";
+        
+        return gtmSummary;
       
       case "client-overview":
-        const customerSegments = questions.find(q => q.id === "customer-segments")?.answer || "diverse customer segments";
-        const customerJourney = questions.find(q => q.id === "customer-journey")?.answer || "our customer journey";
-        return `Our main customer segments are ${customerSegments}. Customers typically ${customerJourney}.`;
+        const customerSegments = extractInfo("customer-segments");
+        const customerJourney = extractInfo("customer-journey");
+        
+        if (!customerSegments && !customerJourney) {
+          return "Please provide information about your customers to generate a client overview.";
+        }
+
+        let clientSummary = "Our customer base includes ";
+        
+        if (customerSegments) {
+          // Clean up customer segments text
+          let cleanCustomerSegments = customerSegments.trim();
+          if (cleanCustomerSegments.toLowerCase().startsWith("our customers are ")) {
+            cleanCustomerSegments = cleanCustomerSegments.substring(18);
+          }
+          if (cleanCustomerSegments.toLowerCase().startsWith("we serve ")) {
+            cleanCustomerSegments = cleanCustomerSegments.substring(9);
+          }
+          if (cleanCustomerSegments.toLowerCase().startsWith("our target customers are ")) {
+            cleanCustomerSegments = cleanCustomerSegments.substring(25);
+          }
+          clientSummary += `${cleanCustomerSegments}. `;
+        } else {
+          clientSummary += "diverse segments with strong growth potential. ";
+        }
+        
+        if (customerJourney) {
+          // Clean up customer journey text
+          let cleanCustomerJourney = customerJourney.trim();
+          if (cleanCustomerJourney.toLowerCase().startsWith("customers typically ")) {
+            cleanCustomerJourney = cleanCustomerJourney.substring(20);
+          }
+          if (cleanCustomerJourney.toLowerCase().startsWith("the journey involves ")) {
+            cleanCustomerJourney = cleanCustomerJourney.substring(20);
+          }
+          if (cleanCustomerJourney.toLowerCase().startsWith("they discover us through ")) {
+            cleanCustomerJourney = cleanCustomerJourney.substring(24);
+          }
+          clientSummary += `Customers typically ${cleanCustomerJourney}. `;
+        } else {
+          clientSummary += "We focus on optimizing the customer experience and journey. ";
+        }
+        
+        clientSummary += "Our customer-centric approach ensures high satisfaction and retention rates.";
+        
+        return clientSummary;
       
       default:
-        return "Summary generated based on your responses.";
+        return "Our comprehensive analysis demonstrates strong market positioning and growth potential.";
     }
   };
 
@@ -293,7 +526,11 @@ export default function BusinessPlanComposer() {
     setTopics(prevTopics => 
       prevTopics.map(topic => 
         topic.id === topicId 
-          ? { ...topic, progress, summary: progress === 100 ? generateTopicSummary(topicId) : topic.summary }
+          ? { 
+              ...topic, 
+              progress, 
+              summary: progress === 100 ? generateTopicSummary(topicId) : topic.summary 
+            }
           : topic
       )
     );
@@ -326,10 +563,48 @@ export default function BusinessPlanComposer() {
 
   const handleUseDefault = () => {
     const currentQuestion = getCurrentQuestion();
-    if (!currentQuestion) return;
+    if (!currentQuestion || !selectedTopic) return;
 
-    handleAnswerChange(currentQuestion.example.replace("Example: ", ""));
-    handleSubmit();
+    // Get the example answer without "Example: " prefix
+    const exampleAnswer = currentQuestion.example.replace("Example: ", "");
+    
+    // Create a new copy of topicQuestions and update the current answer
+    const newTopicQuestions = { ...topicQuestions };
+    newTopicQuestions[selectedTopic][currentQuestionIndex].answer = exampleAnswer;
+    
+    // Update the topicQuestions state
+    setTopicQuestions(newTopicQuestions);
+    
+    // Calculate progress for this topic
+    const topicQuestionsForThisTopic = newTopicQuestions[selectedTopic];
+    const answeredCount = topicQuestionsForThisTopic.filter(q => q.answer.trim()).length;
+    const totalCount = topicQuestionsForThisTopic.length;
+    const newProgress = Math.round((answeredCount / totalCount) * 100);
+    
+    // Update the topics state with new progress
+    setTopics(prevTopics => 
+      prevTopics.map(topic => 
+        topic.id === selectedTopic 
+          ? { 
+              ...topic, 
+              progress: newProgress,
+              summary: newProgress === 100 ? generateTopicSummary(selectedTopic) : topic.summary
+            }
+          : topic
+      )
+    );
+    
+    // Move to next question after a short delay
+    setTimeout(() => {
+      if (currentQuestionIndex < topicQuestionsForThisTopic.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      } else {
+        // Topic completed
+        setCurrentQuestionIndex(0);
+        setSelectedTopic(null);
+        setIsEditing(false);
+      }
+    }, 300);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -348,6 +623,13 @@ export default function BusinessPlanComposer() {
     setSelectedTopic(topicId);
     setCurrentQuestionIndex(0);
     setIsEditing(false);
+  };
+
+  const handleEditButtonClick = (e: React.MouseEvent, topicId: string) => {
+    e.stopPropagation();
+    setSelectedTopic(topicId);
+    setIsEditing(true);
+    setCurrentQuestionIndex(0);
   };
 
   const handleReturnToHome = () => {
@@ -394,7 +676,7 @@ export default function BusinessPlanComposer() {
         },
         {
           id: "gtm-strategy",
-          title: "Go-To-Market (GTM) Strategy",
+          title: "GTM Strategy",
           progress: 0,
           summary: ""
         },
@@ -525,7 +807,7 @@ export default function BusinessPlanComposer() {
           {/* Example */}
           <div className="bg-blue-50 rounded-lg p-3 mb-4">
             <p className="text-sm text-blue-800 font-medium">Example:</p>
-            <p className="text-sm text-blue-700">{currentQuestion.example}</p>
+            <p className="text-sm text-blue-700">{currentQuestion.example.replace("Example: ", "")}</p>
           </div>
         </div>
 
@@ -562,7 +844,7 @@ export default function BusinessPlanComposer() {
               disabled={isSubmitting}
               className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
-              Use Default
+              Use Example
             </button>
           </div>
           
@@ -591,7 +873,7 @@ export default function BusinessPlanComposer() {
                     height={25}
                     priority
                   />
-                  <span className="text-2xl font-bold text-gray-900">NBS AI Platform</span>
+                  <span className="text-2xl font-bold text-gray-900">Business Plan Compiler</span>
                 </Link>
               </div>
               <div className="flex items-center space-x-4">
@@ -696,7 +978,7 @@ export default function BusinessPlanComposer() {
                   height={25}
                   priority
                 />
-                <span className="text-2xl font-bold text-gray-900">NBS AI Platform</span>
+                <span className="text-2xl font-bold text-gray-900">Business Plan Compiler</span>
               </Link>
             </div>
             <nav className="hidden md:flex space-x-8">
@@ -720,13 +1002,14 @@ export default function BusinessPlanComposer() {
         <div className="w-full lg:w-1/2 bg-white border-r border-gray-200">
           <div className="h-full flex flex-col">
             {/* Chat Header */}
-            <div className="p-6 border-b border-gray-200">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">Business Plan Compiler</h2>
-                <p className="text-gray-600 mt-2">Answer questions to build your business plan</p>
+            <div className="p-6 border-b border-gray-200 h-32 flex flex-col justify-center">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Questions & Answers</h2>
+                </div>
                 
-                {/* Action Buttons */}
-                <div className="flex items-center space-x-3 mt-4">
+                {/* Action Buttons - Right Side */}
+                <div className="flex items-center space-x-2">
                   {isSaving && (
                     <div className="flex items-center text-sm text-gray-500">
                       <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-500 mr-2"></div>
@@ -735,22 +1018,31 @@ export default function BusinessPlanComposer() {
                   )}
                   <button
                     onClick={() => {
-                      // Fill all questions with default examples
-                      const updatedQuestions = { ...topicQuestions };
-                      Object.keys(updatedQuestions).forEach(topicId => {
-                        updatedQuestions[topicId].forEach(question => {
+                      // Create a new copy of topicQuestions and fill all with examples
+                      const newTopicQuestions = { ...topicQuestions };
+                      Object.keys(newTopicQuestions).forEach(topicId => {
+                        newTopicQuestions[topicId].forEach(question => {
                           question.answer = question.example.replace("Example: ", "");
                         });
                       });
-                      setTopicQuestions(updatedQuestions);
                       
-                      // Update all topics to 100% progress
+                      // Update the topicQuestions state
+                      setTopicQuestions(newTopicQuestions);
+                      
+                      // Update all topics with new progress and summaries
                       setTopics(prevTopics => 
-                        prevTopics.map(topic => ({
-                          ...topic,
-                          progress: 100,
-                          summary: generateTopicSummary(topic.id)
-                        }))
+                        prevTopics.map(topic => {
+                          const topicQuestionsForThisTopic = newTopicQuestions[topic.id];
+                          const answeredCount = topicQuestionsForThisTopic.filter(q => q.answer.trim()).length;
+                          const totalCount = topicQuestionsForThisTopic.length;
+                          const newProgress = Math.round((answeredCount / totalCount) * 100);
+                          
+                          return {
+                            ...topic,
+                            progress: newProgress,
+                            summary: newProgress === 100 ? generateTopicSummary(topic.id) : topic.summary
+                          };
+                        })
                       );
                       
                       alert("Default data has been loaded successfully!");
@@ -788,15 +1080,21 @@ export default function BusinessPlanComposer() {
         <div className="w-full lg:w-1/2 bg-white">
           <div className="h-full flex flex-col">
             {/* Topics Header */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 h-32 flex flex-col justify-center">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">Topics</h3>
-                  <p className="text-gray-600 mt-1">Complete each section to build your plan</p>
+                  <h3 className="text-xl font-bold text-gray-900">Core Topics</h3>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <span className="text-sm text-gray-600">Overall Progress</span>
-                  {renderProgressDonut(overallProgress, "sm")}
+                  <button
+                    onClick={handleShowBusinessPlanSummary}
+                    className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-200 text-sm font-medium"
+                  >
+                    Show Summary
+                  </button>
+                  <div className="flex items-center">
+                    {renderProgressDonut(overallProgress, "sm")}
+                  </div>
                 </div>
               </div>
             </div>
@@ -805,41 +1103,41 @@ export default function BusinessPlanComposer() {
             <div className="flex-1 p-6">
               <div className="space-y-3">
                 {topics.map((topic) => (
-                  <button
-                    key={topic.id}
-                    onClick={() => handleTopicSelection(topic.id)}
-                    className={`w-full p-4 rounded-xl border transition-all duration-200 text-left ${
-                      selectedTopic === topic.id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0">
-                          {renderProgressDonut(topic.progress, "sm")}
-                        </div>
-                        <span className="font-medium text-gray-900">{topic.title}</span>
+                  <div key={topic.id} className="flex items-center space-x-3">
+                    <button
+                      onClick={() => handleTopicSelection(topic.id)}
+                      className={`
+                        group rounded-xl border bg-white hover:bg-muted/40 transition-all duration-200
+                        p-4
+                        w-[70%]
+                        h-12
+                        ${selectedTopic === topic.id
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                        }
+                      `}
+                    >
+                      <div className="flex items-center h-full">
+                        <div className="font-medium text-gray-900">{topic.title}</div>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {topic.progress}% complete
-                      </div>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditButtonClick(e, topic.id);
+                      }}
+                      className="w-[20%] px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm font-medium h-12"
+                    >
+                      Edit
+                    </button>
+                    <div className="w-[10%] flex items-center justify-center">
+                      {renderProgressDonut(topic.progress, "sm")}
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
               
-              {/* Business Plan Summary Button */}
-              {allTopicsComplete && (
-                <div className="mt-6">
-                  <button
-                    onClick={handleShowBusinessPlanSummary}
-                    className="w-full bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors duration-200 font-medium"
-                  >
-                    Show Business Plan Summary
-                  </button>
-                </div>
-              )}
+              {/* Business Plan Summary Button - Removed since it's now in header */}
             </div>
             
             {/* Summary Area */}
