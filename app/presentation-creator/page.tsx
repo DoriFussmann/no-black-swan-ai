@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -211,7 +211,6 @@ export default function PresentationCreator() {
   });
 
   const overallProgress = Math.round(topics.reduce((sum, topic) => sum + topic.progress, 0) / topics.length);
-  const allTopicsComplete = topics.every(topic => topic.progress === 100);
 
   // Autosave functionality
   useEffect(() => {
@@ -244,27 +243,7 @@ export default function PresentationCreator() {
         console.error('Error loading saved data:', error);
       }
     }
-  }, []);
-
-  // Keyboard navigation for slideshow
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!showSummary) return;
-      
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault();
-        handleNextSlide();
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        handlePrevSlide();
-      } else if (e.key === 'Escape') {
-        handleBackToCreator();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [showSummary, currentSlideIndex]);
+  }, [topics, topicQuestions]);
 
   const renderProgressDonut = (progress: number, size: "sm" | "md" = "md") => {
     const radius = size === "sm" ? 16 : 18;
@@ -581,24 +560,24 @@ export default function PresentationCreator() {
     setCurrentSlideIndex(0);
   };
 
-  const handleBackToCreator = () => {
+  const handleBackToCreator = useCallback(() => {
     setShowSummary(false);
-  };
+  }, []);
 
-  const handleNextSlide = () => {
+  const handleNextSlide = useCallback(() => {
     const coverSlide = topics.find(t => t.id === "cover");
     const completedTopics = topics.filter(topic => topic.id !== "cover" && topic.progress === 100);
     const allSlides = [coverSlide, ...completedTopics].filter(Boolean);
     if (currentSlideIndex < allSlides.length - 1) {
       setCurrentSlideIndex(currentSlideIndex + 1);
     }
-  };
+  }, [topics, currentSlideIndex]);
 
-  const handlePrevSlide = () => {
+  const handlePrevSlide = useCallback(() => {
     if (currentSlideIndex > 0) {
       setCurrentSlideIndex(currentSlideIndex - 1);
     }
-  };
+  }, [currentSlideIndex]);
 
   const handleExportPDF = () => {
     // TODO: Implement PDF export functionality
@@ -614,6 +593,26 @@ export default function PresentationCreator() {
     // TODO: Implement email functionality
     alert("Email functionality coming soon!");
   };
+
+  // Keyboard navigation for slideshow
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!showSummary) return;
+      
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        handleNextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handlePrevSlide();
+      } else if (e.key === 'Escape') {
+        handleBackToCreator();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showSummary, currentSlideIndex, handleNextSlide, handlePrevSlide, handleBackToCreator]);
 
   const getSlideIcon = (slideId?: string) => {
     if (!slideId) return null;
@@ -1305,21 +1304,21 @@ export default function PresentationCreator() {
                         const businessOverviewQuestions = bp.topicQuestions?.["business-overview"];
                         console.log('Business Overview questions found:', businessOverviewQuestions);
                         if (businessOverviewQuestions) {
-                          const companyNameAnswer = businessOverviewQuestions.find((q: any) => q.id === "company-name")?.answer;
-                          const businessModelAnswer = businessOverviewQuestions.find((q: any) => q.id === "business-model")?.answer;
-                          const missionAnswer = businessOverviewQuestions.find((q: any) => q.id === "mission")?.answer;
+                          const companyNameAnswer = businessOverviewQuestions.find((q: Question) => q.id === "company-name")?.answer;
+                          const businessModelAnswer = businessOverviewQuestions.find((q: Question) => q.id === "business-model")?.answer;
+                          const missionAnswer = businessOverviewQuestions.find((q: Question) => q.id === "mission")?.answer;
                           
                           // Populate cover slide
                           if (companyNameAnswer && companyNameAnswer.trim()) {
                             console.log('Setting cover company name with answer:', companyNameAnswer);
-                            const coverCompanyNameQuestion = bpQuestions["cover"].find((q: any) => q.id === "company-name");
+                            const coverCompanyNameQuestion = bpQuestions["cover"].find((q: Question) => q.id === "company-name");
                             if (coverCompanyNameQuestion) coverCompanyNameQuestion.answer = companyNameAnswer;
                             dataFound = true;
                           }
                           
                           if (missionAnswer && missionAnswer.trim()) {
                             console.log('Setting cover tagline with mission answer:', missionAnswer);
-                            const coverTaglineQuestion = bpQuestions["cover"].find((q: any) => q.id === "tagline");
+                            const coverTaglineQuestion = bpQuestions["cover"].find((q: Question) => q.id === "tagline");
                             if (coverTaglineQuestion) coverTaglineQuestion.answer = missionAnswer;
                             dataFound = true;
                           }
@@ -1327,28 +1326,28 @@ export default function PresentationCreator() {
 
                         // Company Purpose mapping - pull from business-overview questions
                         if (businessOverviewQuestions) {
-                          const companyNameAnswer = businessOverviewQuestions.find((q: any) => q.id === "company-name")?.answer;
-                          const businessModelAnswer = businessOverviewQuestions.find((q: any) => q.id === "business-model")?.answer;
-                          const missionAnswer = businessOverviewQuestions.find((q: any) => q.id === "mission")?.answer;
+                          const companyNameAnswer = businessOverviewQuestions.find((q: Question) => q.id === "company-name")?.answer;
+                          const businessModelAnswer = businessOverviewQuestions.find((q: Question) => q.id === "business-model")?.answer;
+                          const missionAnswer = businessOverviewQuestions.find((q: Question) => q.id === "mission")?.answer;
                           
                           // Only populate if we have meaningful answers
                           if (companyNameAnswer && companyNameAnswer.trim()) {
                             console.log('Setting company name with answer:', companyNameAnswer);
-                            const companyNameQuestion = bpQuestions["company-purpose"].find((q: any) => q.id === "company-name");
+                            const companyNameQuestion = bpQuestions["company-purpose"].find((q: Question) => q.id === "company-name");
                             if (companyNameQuestion) companyNameQuestion.answer = companyNameAnswer;
                             dataFound = true;
                           }
                           
                           if (missionAnswer && missionAnswer.trim()) {
                             console.log('Setting mission with answer:', missionAnswer);
-                            const missionQuestion = bpQuestions["company-purpose"].find((q: any) => q.id === "mission");
+                            const missionQuestion = bpQuestions["company-purpose"].find((q: Question) => q.id === "mission");
                             if (missionQuestion) missionQuestion.answer = missionAnswer;
                             dataFound = true;
                           }
                           
                           if (businessModelAnswer && businessModelAnswer.trim()) {
                             console.log('Setting vision with business model answer:', businessModelAnswer);
-                            const visionQuestion = bpQuestions["company-purpose"].find((q: any) => q.id === "vision");
+                            const visionQuestion = bpQuestions["company-purpose"].find((q: Question) => q.id === "vision");
                             if (visionQuestion) visionQuestion.answer = businessModelAnswer;
                             dataFound = true;
                           }
@@ -1358,20 +1357,20 @@ export default function PresentationCreator() {
                         const marketSummaryQuestions = bp.topicQuestions?.["market-summary"];
                         console.log('Market Summary questions found:', marketSummaryQuestions);
                         if (marketSummaryQuestions) {
-                          const targetMarketAnswer = marketSummaryQuestions.find((q: any) => q.id === "target-market")?.answer;
-                          const marketSizeAnswer = marketSummaryQuestions.find((q: any) => q.id === "market-size")?.answer;
+                          const targetMarketAnswer = marketSummaryQuestions.find((q: Question) => q.id === "target-market")?.answer;
+                          const marketSizeAnswer = marketSummaryQuestions.find((q: Question) => q.id === "market-size")?.answer;
                           
                           // Only populate if we have meaningful answers
                           if (targetMarketAnswer && targetMarketAnswer.trim()) {
                             console.log('Setting problem description with target market answer:', targetMarketAnswer);
-                            const problemQuestion = bpQuestions["problem"].find((q: any) => q.id === "problem-description");
+                            const problemQuestion = bpQuestions["problem"].find((q: Question) => q.id === "problem-description");
                             if (problemQuestion) problemQuestion.answer = targetMarketAnswer;
                             dataFound = true;
                           }
                           
                           if (marketSizeAnswer && marketSizeAnswer.trim()) {
                             console.log('Setting pain points with market size answer:', marketSizeAnswer);
-                            const painPointsQuestion = bpQuestions["problem"].find((q: any) => q.id === "pain-points");
+                            const painPointsQuestion = bpQuestions["problem"].find((q: Question) => q.id === "pain-points");
                             if (painPointsQuestion) painPointsQuestion.answer = marketSizeAnswer;
                             dataFound = true;
                           }
@@ -1381,20 +1380,20 @@ export default function PresentationCreator() {
                         const productsServicesQuestions = bp.topicQuestions?.["products-services"];
                         console.log('Products Services questions found:', productsServicesQuestions);
                         if (productsServicesQuestions) {
-                          const mainProductAnswer = productsServicesQuestions.find((q: any) => q.id === "main-product")?.answer;
-                          const uniqueValueAnswer = productsServicesQuestions.find((q: any) => q.id === "unique-value")?.answer;
+                          const mainProductAnswer = productsServicesQuestions.find((q: Question) => q.id === "main-product")?.answer;
+                          const uniqueValueAnswer = productsServicesQuestions.find((q: Question) => q.id === "unique-value")?.answer;
                           
                           // Only populate if we have meaningful answers
                           if (mainProductAnswer && mainProductAnswer.trim()) {
                             console.log('Setting solution description with main product answer:', mainProductAnswer);
-                            const solutionQuestion = bpQuestions["solution"].find((q: any) => q.id === "solution-description");
+                            const solutionQuestion = bpQuestions["solution"].find((q: Question) => q.id === "solution-description");
                             if (solutionQuestion) solutionQuestion.answer = mainProductAnswer;
                             dataFound = true;
                           }
                           
                           if (uniqueValueAnswer && uniqueValueAnswer.trim()) {
                             console.log('Setting unique approach with unique value answer:', uniqueValueAnswer);
-                            const uniqueQuestion = bpQuestions["solution"].find((q: any) => q.id === "unique-approach");
+                            const uniqueQuestion = bpQuestions["solution"].find((q: Question) => q.id === "unique-approach");
                             if (uniqueQuestion) uniqueQuestion.answer = uniqueValueAnswer;
                             dataFound = true;
                           }
@@ -1404,20 +1403,20 @@ export default function PresentationCreator() {
                         const gtmStrategyQuestions = bp.topicQuestions?.["gtm-strategy"];
                         console.log('GTM Strategy questions found:', gtmStrategyQuestions);
                         if (gtmStrategyQuestions) {
-                          const marketingChannelsAnswer = gtmStrategyQuestions.find((q: any) => q.id === "marketing-channels")?.answer;
-                          const pricingStrategyAnswer = gtmStrategyQuestions.find((q: any) => q.id === "pricing-strategy")?.answer;
+                          const marketingChannelsAnswer = gtmStrategyQuestions.find((q: Question) => q.id === "marketing-channels")?.answer;
+                          const pricingStrategyAnswer = gtmStrategyQuestions.find((q: Question) => q.id === "pricing-strategy")?.answer;
                           
                           // Only populate if we have meaningful answers
                           if (marketingChannelsAnswer && marketingChannelsAnswer.trim()) {
                             console.log('Setting timing with marketing channels answer:', marketingChannelsAnswer);
-                            const timingQuestion = bpQuestions["why-now"].find((q: any) => q.id === "timing");
+                            const timingQuestion = bpQuestions["why-now"].find((q: Question) => q.id === "timing");
                             if (timingQuestion) timingQuestion.answer = marketingChannelsAnswer;
                             dataFound = true;
                           }
                           
                           if (pricingStrategyAnswer && pricingStrategyAnswer.trim()) {
                             console.log('Setting market trends with pricing strategy answer:', pricingStrategyAnswer);
-                            const trendsQuestion = bpQuestions["why-now"].find((q: any) => q.id === "market-trends");
+                            const trendsQuestion = bpQuestions["why-now"].find((q: Question) => q.id === "market-trends");
                             if (trendsQuestion) trendsQuestion.answer = pricingStrategyAnswer;
                             dataFound = true;
                           }
@@ -1425,20 +1424,20 @@ export default function PresentationCreator() {
 
                         // Market Size mapping - pull from market-summary questions
                         if (marketSummaryQuestions) {
-                          const targetMarketAnswer = marketSummaryQuestions.find((q: any) => q.id === "target-market")?.answer;
-                          const marketSizeAnswer = marketSummaryQuestions.find((q: any) => q.id === "market-size")?.answer;
+                          const targetMarketAnswer = marketSummaryQuestions.find((q: Question) => q.id === "target-market")?.answer;
+                          const marketSizeAnswer = marketSummaryQuestions.find((q: Question) => q.id === "market-size")?.answer;
                           
                           // Only populate if we have meaningful answers
                           if (targetMarketAnswer && targetMarketAnswer.trim()) {
                             console.log('Setting target market with answer:', targetMarketAnswer);
-                            const targetQuestion = bpQuestions["market-size"].find((q: any) => q.id === "target-market");
+                            const targetQuestion = bpQuestions["market-size"].find((q: Question) => q.id === "target-market");
                             if (targetQuestion) targetQuestion.answer = targetMarketAnswer;
                             dataFound = true;
                           }
                           
                           if (marketSizeAnswer && marketSizeAnswer.trim()) {
                             console.log('Setting market value with answer:', marketSizeAnswer);
-                            const sizeQuestion = bpQuestions["market-size"].find((q: any) => q.id === "market-value");
+                            const sizeQuestion = bpQuestions["market-size"].find((q: Question) => q.id === "market-value");
                             if (sizeQuestion) sizeQuestion.answer = marketSizeAnswer;
                             dataFound = true;
                           }
@@ -1446,20 +1445,20 @@ export default function PresentationCreator() {
 
                         // Competition mapping - pull from products-services questions
                         if (productsServicesQuestions) {
-                          const productDescAnswer = productsServicesQuestions.find((q: any) => q.id === "product-description")?.answer;
-                          const serviceDescAnswer = productsServicesQuestions.find((q: any) => q.id === "service-description")?.answer;
+                          const productDescAnswer = productsServicesQuestions.find((q: Question) => q.id === "product-description")?.answer;
+                          const serviceDescAnswer = productsServicesQuestions.find((q: Question) => q.id === "service-description")?.answer;
                           
                           // Only populate if we have meaningful answers
                           if (productDescAnswer && productDescAnswer.trim()) {
                             console.log('Setting competitors with product answer:', productDescAnswer);
-                            const competitorsQuestion = bpQuestions["competition"].find((q: any) => q.id === "competitors");
+                            const competitorsQuestion = bpQuestions["competition"].find((q: Question) => q.id === "competitors");
                             if (competitorsQuestion) competitorsQuestion.answer = productDescAnswer;
                             dataFound = true;
                           }
                           
                           if (serviceDescAnswer && serviceDescAnswer.trim()) {
                             console.log('Setting competitive advantage with service answer:', serviceDescAnswer);
-                            const advantageQuestion = bpQuestions["competition"].find((q: any) => q.id === "competitive-advantage");
+                            const advantageQuestion = bpQuestions["competition"].find((q: Question) => q.id === "competitive-advantage");
                             if (advantageQuestion) advantageQuestion.answer = serviceDescAnswer;
                             dataFound = true;
                           }
@@ -1467,20 +1466,20 @@ export default function PresentationCreator() {
 
                         // Product mapping - pull from products-services questions
                         if (productsServicesQuestions) {
-                          const mainProductAnswer = productsServicesQuestions.find((q: any) => q.id === "main-product")?.answer;
-                          const uniqueValueAnswer = productsServicesQuestions.find((q: any) => q.id === "unique-value")?.answer;
+                          const mainProductAnswer = productsServicesQuestions.find((q: Question) => q.id === "main-product")?.answer;
+                          const uniqueValueAnswer = productsServicesQuestions.find((q: Question) => q.id === "unique-value")?.answer;
                           
                           // Only populate if we have meaningful answers
                           if (mainProductAnswer && mainProductAnswer.trim()) {
                             console.log('Setting product description with main product answer:', mainProductAnswer);
-                            const productQuestion = bpQuestions["product"].find((q: any) => q.id === "product-description");
+                            const productQuestion = bpQuestions["product"].find((q: Question) => q.id === "product-description");
                             if (productQuestion) productQuestion.answer = mainProductAnswer;
                             dataFound = true;
                           }
                           
                           if (uniqueValueAnswer && uniqueValueAnswer.trim()) {
                             console.log('Setting key features with unique value answer:', uniqueValueAnswer);
-                            const featuresQuestion = bpQuestions["product"].find((q: any) => q.id === "key-features");
+                            const featuresQuestion = bpQuestions["product"].find((q: Question) => q.id === "key-features");
                             if (featuresQuestion) featuresQuestion.answer = uniqueValueAnswer;
                             dataFound = true;
                           }
@@ -1488,20 +1487,20 @@ export default function PresentationCreator() {
 
                         // Business Model mapping - pull from gtm-strategy questions
                         if (gtmStrategyQuestions) {
-                          const marketingChannelsAnswer = gtmStrategyQuestions.find((q: any) => q.id === "marketing-channels")?.answer;
-                          const pricingStrategyAnswer = gtmStrategyQuestions.find((q: any) => q.id === "pricing-strategy")?.answer;
+                          const marketingChannelsAnswer = gtmStrategyQuestions.find((q: Question) => q.id === "marketing-channels")?.answer;
+                          const pricingStrategyAnswer = gtmStrategyQuestions.find((q: Question) => q.id === "pricing-strategy")?.answer;
                           
                           // Only populate if we have meaningful answers
                           if (marketingChannelsAnswer && marketingChannelsAnswer.trim()) {
                             console.log('Setting revenue model with marketing channels answer:', marketingChannelsAnswer);
-                            const revenueQuestion = bpQuestions["business-model"].find((q: any) => q.id === "revenue-model");
+                            const revenueQuestion = bpQuestions["business-model"].find((q: Question) => q.id === "revenue-model");
                             if (revenueQuestion) revenueQuestion.answer = marketingChannelsAnswer;
                             dataFound = true;
                           }
                           
                           if (pricingStrategyAnswer && pricingStrategyAnswer.trim()) {
                             console.log('Setting pricing strategy with pricing strategy answer:', pricingStrategyAnswer);
-                            const pricingQuestion = bpQuestions["business-model"].find((q: any) => q.id === "pricing-strategy");
+                            const pricingQuestion = bpQuestions["business-model"].find((q: Question) => q.id === "pricing-strategy");
                             if (pricingQuestion) pricingQuestion.answer = pricingStrategyAnswer;
                             dataFound = true;
                           }
@@ -1511,20 +1510,20 @@ export default function PresentationCreator() {
                         const clientOverviewQuestions = bp.topicQuestions?.["client-overview"];
                         console.log('Client Overview questions found:', clientOverviewQuestions);
                         if (clientOverviewQuestions) {
-                          const customerSegmentsAnswer = clientOverviewQuestions.find((q: any) => q.id === "customer-segments")?.answer;
-                          const customerJourneyAnswer = clientOverviewQuestions.find((q: any) => q.id === "customer-journey")?.answer;
+                          const customerSegmentsAnswer = clientOverviewQuestions.find((q: Question) => q.id === "customer-segments")?.answer;
+                          const customerJourneyAnswer = clientOverviewQuestions.find((q: Question) => q.id === "customer-journey")?.answer;
                           
                           // Only populate if we have meaningful answers
                           if (customerSegmentsAnswer && customerSegmentsAnswer.trim()) {
                             console.log('Setting team overview with customer segments answer:', customerSegmentsAnswer);
-                            const teamQuestion = bpQuestions["team"].find((q: any) => q.id === "team-overview");
+                            const teamQuestion = bpQuestions["team"].find((q: Question) => q.id === "team-overview");
                             if (teamQuestion) teamQuestion.answer = customerSegmentsAnswer;
                             dataFound = true;
                           }
                           
                           if (customerJourneyAnswer && customerJourneyAnswer.trim()) {
                             console.log('Setting team expertise with customer journey answer:', customerJourneyAnswer);
-                            const expertiseQuestion = bpQuestions["team"].find((q: any) => q.id === "team-expertise");
+                            const expertiseQuestion = bpQuestions["team"].find((q: Question) => q.id === "team-expertise");
                             if (expertiseQuestion) expertiseQuestion.answer = customerJourneyAnswer;
                             dataFound = true;
                           }
@@ -1548,10 +1547,10 @@ export default function PresentationCreator() {
                           
                           if (financialData && financialData.trim()) {
                             console.log('Setting financials with available data:', financialData);
-                            const revenueQuestion = bpQuestions["financials"].find((q: any) => q.id === "revenue-projection");
+                            const revenueQuestion = bpQuestions["financials"].find((q: Question) => q.id === "revenue-projection");
                             if (revenueQuestion) revenueQuestion.answer = financialData;
                             
-                            const fundingQuestion = bpQuestions["financials"].find((q: any) => q.id === "funding-needs");
+                            const fundingQuestion = bpQuestions["financials"].find((q: Question) => q.id === "funding-needs");
                             if (fundingQuestion) fundingQuestion.answer = financialData;
                             
                             dataFound = true;

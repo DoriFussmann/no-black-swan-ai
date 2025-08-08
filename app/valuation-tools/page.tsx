@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+
 
 interface ValuationInputs {
   // Row 0: Company metrics
@@ -116,7 +116,7 @@ export default function ValuationTools() {
   };
 
   // Calculate valuation ranges based on inputs
-  const calculateValuationRanges = () => {
+  const calculateValuationRanges = useCallback(() => {
     const ranges: ValuationRange[] = [];
     
     const sales = parseFloat(inputs.companySales) || 0;
@@ -203,12 +203,9 @@ export default function ValuationTools() {
     }
     
     setValuationRanges(ranges);
-  };
-
-  // Calculate ranges whenever inputs change
-  useEffect(() => {
-    calculateValuationRanges();
   }, [inputs]);
+
+
 
   // Format axis values for display
   const formatAxisValue = (value: number) => {
@@ -222,17 +219,7 @@ export default function ValuationTools() {
     return `$${value.toFixed(0)}`;
   };
 
-  // Prepare data for Recharts horizontal bar chart
-  const chartData = valuationRanges.map((range, index) => ({
-    name: range.name,
-    low: range.low,
-    high: range.high,
-    color: range.color,
-    description: range.description,
-    // For the football field chart, we need the range width
-    rangeWidth: range.high - range.low,
-    startPosition: range.low
-  }));
+
 
   // Calculate chart domain
   const allValues = valuationRanges.flatMap(range => [range.low, range.high]);

@@ -143,7 +143,6 @@ export default function BusinessPlanComposer() {
   });
 
   const overallProgress = Math.round(topics.reduce((sum, topic) => sum + topic.progress, 0) / topics.length);
-  const allTopicsComplete = topics.every(topic => topic.progress === 100);
 
   // Autosave functionality
   useEffect(() => {
