@@ -42,7 +42,7 @@ export default function InvestorsVault() {
           {/* Hero Section */}
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Investors&apos; <span className="text-teal-400">Vault</span>
+              Investor <span className="text-teal-400">Hub</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               Comprehensive investor relations platform with secure document sharing, due diligence automation, and investor communication tools.

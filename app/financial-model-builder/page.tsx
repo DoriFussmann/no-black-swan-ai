@@ -42,7 +42,7 @@ export default function FinancialModelBuilder() {
           {/* Hero Section */}
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Financial Model <span className="text-green-400">Builder</span>
+              Model <span className="text-green-400">Builder</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               Build sophisticated financial models with automated calculations, scenario analysis, and real-time forecasting capabilities.

@@ -931,33 +931,7 @@ export default function BusinessPlanComposer() {
           </div>
         </main>
 
-        {/* Footer */}
-        <footer className="bg-gray-50 border-t border-gray-200 py-12 px-6 mt-20">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="flex items-center space-x-4 mb-6 md:mb-0">
-                <Image
-                  src="/next.svg"
-                  alt="Next.js logo"
-                  width={100}
-                  height={20}
-                />
-                <span className="text-gray-600">© 2024 NBS AI Platform. All rights reserved.</span>
-              </div>
-              <div className="flex space-x-6">
-                <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                  Privacy Policy
-                </a>
-                <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                  Terms of Service
-                </a>
-                <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                  Support
-                </a>
-              </div>
-            </div>
-          </div>
-        </footer>
+
       </div>
     );
   }
@@ -977,7 +951,7 @@ export default function BusinessPlanComposer() {
                   height={25}
                   priority
                 />
-                <span className="text-2xl font-bold text-gray-900">Business Plan Compiler</span>
+                <span className="text-2xl font-bold text-gray-900">Business Composer</span>
               </Link>
             </div>
             <nav className="hidden md:flex space-x-8">
@@ -1173,33 +1147,7 @@ export default function BusinessPlanComposer() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 py-12 px-6 mt-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-4 mb-6 md:mb-0">
-              <Image
-                src="/next.svg"
-                alt="Next.js logo"
-                width={100}
-                height={20}
-              />
-              <span className="text-gray-600">© 2024 NBS AI Platform. All rights reserved.</span>
-            </div>
-            <div className="flex space-x-6">
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                Privacy Policy
-              </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                Terms of Service
-              </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                Support
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }

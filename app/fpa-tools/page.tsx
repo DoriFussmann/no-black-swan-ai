@@ -71,34 +71,7 @@ export default function FpaTools() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-800/50 border-t border-gray-700/50 py-12 px-6 mt-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-4 mb-6 md:mb-0">
-              <Image
-                src="/next.svg"
-                alt="Next.js logo"
-                width={100}
-                height={20}
-                className="dark:invert"
-              />
-              <span className="text-gray-300">© 2024 NBS AI Platform. All rights reserved.</span>
-            </div>
-            <div className="flex space-x-6">
-              <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
-                Privacy Policy
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
-                Terms of Service
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
-                Support
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }
