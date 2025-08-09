@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { CalendarIcon, MagnifyingGlassIcon, ChartBarIcon, HomeIcon } from "@heroicons/react/24/outline";
+import Container from "@/components/Container";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -530,31 +531,34 @@ export default function ASPPToolsPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center">
-                <ChartBarIcon className="w-6 h-6 text-white" />
+        <Container>
+          <div className="py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center">
+                  <ChartBarIcon className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">Price Tracker</h1>
+                  <p className="text-gray-600">Annotated Share Price Performance Analysis</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Price Tracker</h1>
-                <p className="text-gray-600">Annotated Share Price Performance Analysis</p>
-              </div>
+              <Link 
+                href="/"
+                className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200"
+              >
+                <HomeIcon className="w-5 h-5 mr-2" />
+                Home
+              </Link>
             </div>
-            <Link 
-              href="/"
-              className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200"
-            >
-              <HomeIcon className="w-5 h-5 mr-2" />
-              Home
-            </Link>
           </div>
-        </div>
+        </Container>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <main className="py-8">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Column - User Inputs (25% width) */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
@@ -780,7 +784,8 @@ export default function ASPPToolsPage() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </Container>
+    </main>
+  </div>
   );
 }

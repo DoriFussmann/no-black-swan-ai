@@ -6,7 +6,7 @@ export default function InvestorsVault() {
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
       <header className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700/50">
-        <div className="max-w-6xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-teal-600 rounded-xl flex items-center justify-center">
@@ -19,12 +19,12 @@ export default function InvestorsVault() {
                 <p className="text-gray-300">Secure investor relations and due diligence platform</p>
               </div>
             </div>
-            <Link 
+                                     <Link 
               href="/"
               className="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
             >
               <HomeIcon className="w-5 h-5 mr-2" />
-              Return to Home
+              Home
             </Link>
           </div>
         </div>
