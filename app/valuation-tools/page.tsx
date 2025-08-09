@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { HomeIcon } from "@heroicons/react/24/outline";
 
 export default function ValuationTools() {
   const [inputs, setInputs] = useState({
@@ -34,42 +34,27 @@ export default function ValuationTools() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-3">
-              <Image
-                src="/globe.svg"
-                alt="NBS AI Platform"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-              />
-              <span className="text-xl font-bold text-gray-900">NBS AI Platform</span>
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Valuation Engine</h1>
+                <p className="text-gray-600">Advanced startup valuation with football field charts</p>
+              </div>
+            </div>
+            <Link 
+              href="/"
+              className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200"
+            >
+              <HomeIcon className="w-5 h-5 mr-2" />
+              Return to Home
             </Link>
-            <nav className="flex space-x-8">
-              <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                Home
-              </Link>
-              <Link href="/business-plan-composer" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                Business Plan Composer
-              </Link>
-              <Link href="/financial-model-builder" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                Financial Model Builder
-              </Link>
-              <Link href="/presentation-creator" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                Presentation Creator
-              </Link>
-              <Link href="/investors-vault" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                Investors Vault
-              </Link>
-              <Link href="/aspp-tools" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                ASPP Tools
-              </Link>
-              <Link href="/fpa-tools" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                FPA Tools
-              </Link>
-            </nav>
           </div>
         </div>
       </header>

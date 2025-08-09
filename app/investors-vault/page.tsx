@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { HomeIcon } from "@heroicons/react/24/outline";
 
 export default function InvestorsVault() {
   return (
@@ -9,29 +9,23 @@ export default function InvestorsVault() {
         <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-4">
-                <Image
-                  src="/next.svg"
-                  alt="Next.js logo"
-                  width={120}
-                  height={25}
-                  className="dark:invert"
-                  priority
-                />
-                <span className="text-2xl font-bold text-white">NBS AI Platform</span>
-              </Link>
+              <div className="w-12 h-12 bg-teal-600 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white">Investor Hub</h1>
+                <p className="text-gray-300">Secure investor relations and due diligence platform</p>
+              </div>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                Home
-              </Link>
-              <a href="#about" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                About
-              </a>
-              <a href="#contact" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                Contact
-              </a>
-            </nav>
+            <Link 
+              href="/"
+              className="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+            >
+              <HomeIcon className="w-5 h-5 mr-2" />
+              Return to Home
+            </Link>
           </div>
         </div>
       </header>
@@ -76,14 +70,21 @@ export default function InvestorsVault() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-4 mb-6 md:mb-0">
-              <Image
-                src="/next.svg"
-                alt="Next.js logo"
-                width={100}
-                height={20}
-                className="dark:invert"
-              />
-              <span className="text-gray-300">© 2024 NBS AI Platform. All rights reserved.</span>
+              <Link href="/" className="flex items-center space-x-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-6 h-6 dark:invert"
+                >
+                  <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
+                </svg>
+                <span className="text-gray-300">© 2024 NBS AI Platform. All rights reserved.</span>
+              </Link>
             </div>
             <div className="flex space-x-6">
               <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">

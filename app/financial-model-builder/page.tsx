@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { HomeIcon } from "@heroicons/react/24/outline";
 
 export default function FinancialModelBuilder() {
   return (
@@ -9,29 +9,23 @@ export default function FinancialModelBuilder() {
         <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-4">
-                <Image
-                  src="/next.svg"
-                  alt="Next.js logo"
-                  width={120}
-                  height={25}
-                  className="dark:invert"
-                  priority
-                />
-                <span className="text-2xl font-bold text-white">NBS AI Platform</span>
-              </Link>
+              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white">Model Builder</h1>
+                <p className="text-gray-300">AI-powered financial modeling and forecasting</p>
+              </div>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                Home
-              </Link>
-              <a href="#about" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                About
-              </a>
-              <a href="#contact" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                Contact
-              </a>
-            </nav>
+            <Link 
+              href="/"
+              className="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+            >
+              <HomeIcon className="w-5 h-5 mr-2" />
+              Return to Home
+            </Link>
           </div>
         </div>
       </header>
@@ -76,13 +70,11 @@ export default function FinancialModelBuilder() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-4 mb-6 md:mb-0">
-              <Image
-                src="/next.svg"
-                alt="Next.js logo"
-                width={100}
-                height={20}
-                className="dark:invert"
-              />
+              <div className="w-6 h-6 bg-green-600 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
               <span className="text-gray-300">© 2024 NBS AI Platform. All rights reserved.</span>
             </div>
             <div className="flex space-x-6">

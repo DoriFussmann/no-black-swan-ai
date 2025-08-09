@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { HomeIcon } from "@heroicons/react/24/outline";
 
 export default function FpaTools() {
   return (
@@ -9,29 +9,23 @@ export default function FpaTools() {
         <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-4">
-                <Image
-                  src="/next.svg"
-                  alt="Next.js logo"
-                  width={120}
-                  height={25}
-                  className="dark:invert"
-                  priority
-                />
-                <span className="text-2xl font-bold text-white">NBS AI Platform</span>
-              </Link>
+              <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white">FP&A Tools</h1>
+                <p className="text-gray-300">Advanced financial planning and analysis tools</p>
+              </div>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                Home
-              </Link>
-              <a href="#about" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                About
-              </a>
-              <a href="#contact" className="text-gray-300 hover:text-white transition-colors duration-200 font-medium">
-                Contact
-              </a>
-            </nav>
+            <Link 
+              href="/"
+              className="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+            >
+              <HomeIcon className="w-5 h-5 mr-2" />
+              Return to Home
+            </Link>
           </div>
         </div>
       </header>
