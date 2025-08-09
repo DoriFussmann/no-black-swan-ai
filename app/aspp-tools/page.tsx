@@ -510,7 +510,9 @@ export default function ASPPToolsPage() {
             font: {
               size: 11
             },
-            callback: (value: number) => `$${value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`,
+            callback: function(tickValue: string | number) {
+              return `$${Number(tickValue).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`;
+            },
             stepSize: tickInterval,
             maxTicksLimit: 5
           }
