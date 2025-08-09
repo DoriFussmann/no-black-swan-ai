@@ -464,7 +464,7 @@ export default function ASPPToolsPage() {
           borderColor: 'rgb(220, 38, 38)',
           borderWidth: 1,
           callbacks: {
-            title: (context: any) => {
+            title: (context: { dataIndex: number }[]) => {
               const index = context[0].dataIndex;
               const date = companyData?.priceHistory[index]?.date;
               return date ? new Date(date).toLocaleDateString('en-US', { 
@@ -701,7 +701,7 @@ export default function ASPPToolsPage() {
                  <div className="flex items-center justify-center h-64 text-gray-500">
                    <div className="text-center">
                      <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                     <p>Click "Generate Analysis" to view performance data</p>
+                     <p>Click &quot;Generate Analysis&quot; to view performance data</p>
                    </div>
                  </div>
                ) : (

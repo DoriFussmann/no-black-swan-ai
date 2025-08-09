@@ -129,7 +129,7 @@ export default function PresentationCreator() {
               {topics.find(t => t.id === selectedTopic)?.title}
             </h3>
             <p className="text-gray-600 mb-4">
-              This feature is coming soon. You'll be able to answer questions and build slides for this topic.
+              This feature is coming soon. You&apos;ll be able to answer questions and build slides for this topic.
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-blue-800 text-sm">
