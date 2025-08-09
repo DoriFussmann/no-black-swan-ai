@@ -29,7 +29,6 @@ export default function BusinessPlanComposer() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [topics, setTopics] = useState<Topic[]>([
     {
       id: "business-overview",
@@ -172,57 +171,9 @@ export default function BusinessPlanComposer() {
     }
   }, []);
 
-  const renderProgressDonut = (progress: number, size: "sm" | "md" = "md") => {
-    const sizeClasses = {
-      sm: "w-6 h-6",
-      md: "w-8 h-8"
-    };
-    
-    const strokeWidth = size === "sm" ? 2 : 3;
-    const radius = size === "sm" ? 10 : 14;
-    const circumference = 2 * Math.PI * radius;
-    const strokeDasharray = circumference;
-    const strokeDashoffset = circumference - (progress / 100) * circumference;
 
-    return (
-      <div className={`${sizeClasses[size]} relative`}>
-        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 32 32">
-          <circle
-            cx="16"
-            cy="16"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth={strokeWidth}
-            fill="transparent"
-            className="text-gray-200"
-          />
-          <circle
-            cx="16"
-            cy="16"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth={strokeWidth}
-            fill="transparent"
-            className="text-blue-600"
-            strokeDasharray={strokeDasharray}
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className={`font-bold ${size === "sm" ? "text-xs" : "text-sm"} text-blue-600`}>
-            {progress}%
-          </span>
-        </div>
-      </div>
-    );
-  };
 
-  const getSelectedTopicSummary = () => {
-    if (!selectedTopic) return "";
-    const topic = topics.find(t => t.id === selectedTopic);
-    return topic?.summary || "";
-  };
+
 
   const getCurrentQuestion = () => {
     if (!selectedTopic) return null;
@@ -335,10 +286,7 @@ export default function BusinessPlanComposer() {
     }
   };
 
-  const handleEditTopic = () => {
-    setIsEditing(true);
-    setCurrentQuestionIndex(0);
-  };
+
 
   const handleTopicSelection = (topicId: string) => {
     setSelectedTopic(topicId);
@@ -346,14 +294,9 @@ export default function BusinessPlanComposer() {
     setIsEditing(false);
   };
 
-  const handleEditButtonClick = (e: React.MouseEvent, topicId: string) => {
-    e.stopPropagation();
-    handleTopicSelection(topicId);
-  };
 
-  const handleReturnToHome = () => {
-    window.location.href = "/";
-  };
+
+
 
   const handleReset = () => {
     if (confirm("Are you sure you want to reset all data? This action cannot be undone.")) {

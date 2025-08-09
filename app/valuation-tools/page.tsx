@@ -5,8 +5,30 @@ import Link from "next/link";
 import { HomeIcon } from "@heroicons/react/24/outline";
 import Container from "../../components/Container";
 
+// Define the inputs interface
+interface ValuationInputs {
+  companySales: string;
+  companyEBITDA: string;
+  totalSharesOutstanding: string;
+  netDebt: string;
+  fiftyTwoWeekHigh: string;
+  fiftyTwoWeekLow: string;
+  publicCompsEVSalesLow: string;
+  publicCompsEVSalesHigh: string;
+  publicCompsEVEBITDALow: string;
+  publicCompsEVEBITDAHigh: string;
+  precedentTxEVSalesLow: string;
+  precedentTxEVSalesHigh: string;
+  precedentTxEVEBITDALow: string;
+  precedentTxEVEBITDAHigh: string;
+  dcfLow: string;
+  dcfHigh: string;
+  dcfTerminalGrowthLow: string;
+  dcfTerminalGrowthHigh: string;
+}
+
 // Unified EV Chart Component - Football Field Chart
-function UnifiedEVChart({ inputs }: { inputs: any }) {
+function UnifiedEVChart({ inputs }: { inputs: ValuationInputs }) {
   // Calculate EV ranges for each methodology
   const companySales = parseFloat(inputs.companySales) || 0;
   const companyEBITDA = parseFloat(inputs.companyEBITDA) || 0;
