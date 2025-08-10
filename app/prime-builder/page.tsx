@@ -251,9 +251,9 @@ export default function PrimeBuilderPage() {
                        <div className="bg-white rounded-lg p-6 border border-gray-200">
                          <h3 className="text-lg font-semibold text-gray-900 mb-6">Required Tools & Flow</h3>
                          
-                                                   {/* Flow Diagram */}
-                          {showFlow && (
-                            <div className="flex items-start justify-between mb-8">
+                                                                              {/* Flow Diagram */}
+                           {showFlow && !showProgressCheck && (
+                             <div className="flex items-start justify-between mb-8">
                               {/* Business Composer Column */}
                               <div className="flex flex-col items-center">
                                                                  {/* Business Composer Box */}
@@ -458,10 +458,21 @@ export default function PrimeBuilderPage() {
                                  )}
                               </div>
                             </div>
-                          )}
+                                                     )}
 
-                        {/* Description */}
-                        <div className="bg-gray-50 rounded-lg p-4">
+                           {/* Progress Check Loader */}
+                           {showProgressCheck && (
+                             <div className="flex items-center justify-center" style={{ aspectRatio: '16/9' }}>
+                               <div className="bg-white rounded-xl p-8 shadow-2xl text-center border border-gray-200">
+                                 <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Checking Progress of Required</h3>
+                                 <p className="text-gray-600">Analyzing tool completion status...</p>
+                               </div>
+                             </div>
+                           )}
+
+                         {/* Description */}
+                         <div className="bg-gray-50 rounded-lg p-4">
                           <h4 className="font-medium text-gray-900 mb-2">How it works:</h4>
                           <p className="text-gray-600 text-sm">
                             To create an Investor Presentation, you'll need to first use the Business Composer to create your business plan, 
