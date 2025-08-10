@@ -670,24 +670,24 @@ export default function ASPPToolsPage() {
                  </div>
                )}
 
-               {/* Generate Button */}
-               <div className="mt-6 pt-6 border-t border-gray-200">
-                 <button
-                   onClick={() => {
-                     if (selectedCompany) {
-                       fetchCompanyData(selectedCompany);
-                     }
-                   }}
-                   disabled={!selectedCompany}
-                   className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-                     selectedCompany
-                       ? 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg transform hover:scale-105'
-                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                   }`}
-                 >
-                   Generate Analysis
-                 </button>
-               </div>
+                               {/* Generate Button */}
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <button
+                    onClick={() => {
+                      if (selectedCompany) {
+                        fetchCompanyData(selectedCompany);
+                      }
+                    }}
+                    disabled={!selectedCompany}
+                    className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                      selectedCompany
+                        ? 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg transform hover:scale-105'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    Generate Analysis
+                  </button>
+                </div>
             </div>
           </div>
 
@@ -697,14 +697,14 @@ export default function ASPPToolsPage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Price Tracker</h2>
               
                              {!selectedCompany ? (
-                 <div className="flex items-center justify-center h-64 text-gray-500">
+                 <div className="flex items-center justify-center text-gray-500" style={{ aspectRatio: '16/9' }}>
                    <div className="text-center">
                      <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                      <p>Select a company to view performance data</p>
                    </div>
                  </div>
                ) : !isGenerated ? (
-                 <div className="flex items-center justify-center h-64 text-gray-500">
+                 <div className="flex items-center justify-center text-gray-500" style={{ aspectRatio: '16/9' }}>
                    <div className="text-center">
                      <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                      <p>Click &quot;Generate Analysis&quot; to view performance data</p>
@@ -714,7 +714,7 @@ export default function ASPPToolsPage() {
                                  <div>
                    {/* Interactive Share Price Chart */}
                    <div className="bg-white rounded-lg p-6 border border-gray-200">
-                     <div className="h-80">
+                     <div style={{ aspectRatio: '16/9' }}>
                        {createChartData() && (
                          <Line 
                            data={createChartData()!} 
@@ -722,70 +722,115 @@ export default function ASPPToolsPage() {
                          />
                        )}
                      </div>
-                     
-
                    </div>
 
-                  {/* News Events Overlay */}
-                  {newsEvents.length > 0 && (
-                    <div className="mt-8">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Events Impacting Price</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {newsEvents.map((event, index) => {
-                          const eventColors = [
-                            '#3B82F6', // Blue
-                            '#10B981', // Green
-                            '#F59E0B', // Amber
-                            '#EF4444', // Red
-                            '#8B5CF6', // Purple
-                            '#F97316', // Orange
-                            '#06B6D4', // Cyan
-                            '#84CC16', // Lime
-                          ];
-                          const eventColor = eventColors[index % eventColors.length];
-                          
-                          return (
-                            <div
-                              key={event.id}
-                              className="p-4 rounded-lg border-l-4 bg-white border shadow-sm h-36 flex flex-col"
-                              style={{ borderLeftColor: eventColor, borderLeftWidth: '4px' }}
-                            >
-                              <div className="flex items-start justify-between mb-2">
-                                <div className="text-sm font-medium text-gray-900">
-                                  {new Date(event.date).toLocaleDateString('en-US', {
-                                    day: '2-digit',
-                                    month: 'short',
-                                    year: '2-digit'
-                                  })}
-                                </div>
-                                <div 
-                                  className="px-2 py-1 rounded-full text-xs font-medium text-white"
-                                  style={{ 
-                                    backgroundColor: event.impact === 'positive' ? '#10B981' : 
-                                                  event.impact === 'negative' ? '#EF4444' : 
-                                                  eventColor 
-                                  }}
-                                >
-                                  {event.impact}
-                                </div>
-                              </div>
-                              <p className="text-gray-700 text-sm leading-tight flex-1 whitespace-normal">{event.summary}</p>
-                              <div className="text-sm text-gray-500 mt-auto pt-2">
-                                Price: ${event.priceAtEvent.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                              </div>
+                   {/* News Events Overlay */}
+                   {newsEvents.length > 0 && (
+                     <div className="mt-8">
+                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Events Impacting Price</h3>
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                         {newsEvents.map((event, index) => {
+                           const eventColors = [
+                             '#3B82F6', // Blue
+                             '#10B981', // Green
+                             '#F59E0B', // Amber
+                             '#EF4444', // Red
+                             '#8B5CF6', // Purple
+                             '#F97316', // Orange
+                             '#06B6D4', // Cyan
+                             '#84CC16', // Lime
+                           ];
+                           const eventColor = eventColors[index % eventColors.length];
+                           
+                           return (
+                             <div
+                               key={event.id}
+                               className="p-4 rounded-lg border-l-4 bg-white border shadow-sm h-36 flex flex-col"
+                               style={{ borderLeftColor: eventColor, borderLeftWidth: '4px' }}
+                             >
+                               <div className="flex items-start justify-between mb-2">
+                                 <div className="text-sm font-medium text-gray-900">
+                                   {new Date(event.date).toLocaleDateString('en-US', {
+                                     day: '2-digit',
+                                     month: 'short',
+                                     year: '2-digit'
+                                   })}
+                                 </div>
+                                 <div 
+                                   className="px-2 py-1 rounded-full text-xs font-medium text-white"
+                                   style={{ 
+                                     backgroundColor: event.impact === 'positive' ? '#10B981' : 
+                                                   event.impact === 'negative' ? '#EF4444' : 
+                                                   eventColor 
+                                   }}
+                                 >
+                                   {event.impact}
+                                 </div>
+                               </div>
+                               <p className="text-gray-700 text-sm leading-tight flex-1 whitespace-normal">{event.summary}</p>
+                               <div className="text-sm text-gray-500 mt-auto pt-2">
+                                 Price: ${event.priceAtEvent.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                               </div>
+                             </div>
+                           );
+                         })}
+                       </div>
+                     </div>
+                   )}
+                 </div>
+               )}
+             </div>
+           </div>
+                   </div>
+
+                     {/* Suggested Design Style Box - Separate Section */}
+           <div className="mt-8">
+             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+               <div className="lg:col-span-2"></div>
+                               <div className="lg:col-span-1">
+                  <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Suggested Design Style</h3>
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-6 border border-blue-200">
+                      <div className="w-full" style={{ aspectRatio: '16/9' }}>
+                        <div className="flex items-center justify-center h-full text-blue-600">
+                          <div className="text-center">
+                            <div className="w-6 h-6 bg-blue-500 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
+                              </svg>
                             </div>
-                          );
-                        })}
+                            <p className="text-xs font-medium">Design Preview</p>
+                            <p className="text-xs text-blue-500 mt-1">16:9 Aspect Ratio</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </Container>
-    </main>
-  </div>
-  );
-}
+                <div className="lg:col-span-1">
+                  <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Suggested Design Style</h3>
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-6 border border-blue-200">
+                      <div className="w-full" style={{ aspectRatio: '16/9' }}>
+                        <div className="flex items-center justify-center h-full text-blue-600">
+                          <div className="text-center">
+                            <div className="w-6 h-6 bg-blue-500 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
+                              </svg>
+                            </div>
+                            <p className="text-xs font-medium">Design Preview</p>
+                            <p className="text-xs text-blue-500 mt-1">16:9 Aspect Ratio</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+             </div>
+           </div>
+       </Container>
+     </main>
+   </div>
+   );
+ }

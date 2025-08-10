@@ -1,5 +1,53 @@
+"use client";
+
 import Link from "next/link";
 import Container from "@/components/Container";
+import { useState, useEffect } from "react";
+
+// Typing Effect Component
+function TypingEffect() {
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  const words = ["Create", "Build", "Analyze", "Design"];
+  const colors = ["text-blue-600", "text-green-600", "text-purple-600", "text-orange-600"];
+  
+  const currentWord = words[currentWordIndex];
+  const currentColor = colors[currentWordIndex];
+  
+  useEffect(() => {
+    const typingSpeed = isDeleting ? 25 : 50;
+    const deletingSpeed = 25;
+    const pauseTime = 1000;
+    
+    const timer = setTimeout(() => {
+      if (!isDeleting) {
+        if (currentCharIndex < currentWord.length) {
+          setCurrentCharIndex(currentCharIndex + 1);
+        } else {
+          setTimeout(() => setIsDeleting(true), pauseTime);
+        }
+      } else {
+        if (currentCharIndex > 0) {
+          setCurrentCharIndex(currentCharIndex - 1);
+        } else {
+          setIsDeleting(false);
+          setCurrentWordIndex((currentWordIndex + 1) % words.length);
+        }
+      }
+    }, isDeleting ? deletingSpeed : typingSpeed);
+    
+    return () => clearTimeout(timer);
+  }, [currentCharIndex, isDeleting, currentWordIndex, currentWord.length, words.length]);
+  
+  return (
+    <span className={currentColor}>
+      {currentWord.substring(0, currentCharIndex)}
+      <span className="animate-pulse">|</span>
+    </span>
+  );
+}
 
 export default function Home() {
   return (
@@ -9,14 +57,9 @@ export default function Home() {
         <Container>
           <div className="py-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
+              <div className="flex items-center">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">NBS AI Platform</h1>
+                  <h1 className="text-3xl font-bold text-gray-900">Rupert AI</h1>
                   <p className="text-gray-600">AI-powered business tools and automation</p>
                 </div>
               </div>
@@ -31,9 +74,38 @@ export default function Home() {
         <Container>
           {/* Hero Section */}
           <div className="text-left mb-16">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              AI-Powered Tools for <span className="text-blue-600">Founders, Managers & Entrepreneurs</span>
+            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+              What Would You Like<br />
+              The Power To <TypingEffect />
             </h1>
+
+          </div>
+
+          {/* Prime Builder Button */}
+          <div className="mb-12">
+            <Link href="/prime-builder" className="block">
+              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer h-full flex flex-col">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Prime Builder</h3>
+              <p className="text-gray-600 leading-relaxed flex-grow text-sm">
+                Build your business foundation with our comprehensive suite of AI-powered tools.
+              </p>
+              <div className="mt-6">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800">
+                  Get Started
+                </span>
+              </div>
+            </div>
+          </Link>
+          </div>
+
+          {/* Tools Grid */}
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Presentation Tools</h2>
           </div>
 
                            {/* Tools Grid */}
@@ -78,45 +150,7 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* Valuation Tools */}
-            <Link href="/valuation-tools" className="block">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer h-full flex flex-col">
-                <div className="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center mb-6">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Valuation Engine</h3>
-                <p className="text-gray-600 leading-relaxed flex-grow text-sm">
-                  Advanced startup valuation with football field charts.
-                </p>
-                <div className="mt-6">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-                    Featured Tool
-                  </span>
-                </div>
-              </div>
-            </Link>
 
-            {/* FP&A Tools */}
-            <Link href="/fpa-tools" className="block">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer h-full flex flex-col">
-                <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
-                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">FP&A Suite</h3>
-                <p className="text-gray-600 leading-relaxed flex-grow text-sm">
-                  Financial planning tools with automated reporting.
-                </p>
-                <div className="mt-6">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                    Coming Soon
-                  </span>
-                </div>
-              </div>
-            </Link>
 
             {/* Investors' Vault */}
             <Link href="/investors-vault" className="block">
@@ -178,6 +212,55 @@ export default function Home() {
                      </div>
                    </Link>
           </div>
+
+          {/* Financial Planning Tools Section */}
+          <div className="mt-16 mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Financial Planning Tools</h2>
+          </div>
+
+          {/* Financial Planning Tools Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Valuation Tools */}
+            <Link href="/valuation-tools" className="block">
+              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer h-full flex flex-col">
+                <div className="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Valuation Engine</h3>
+                <p className="text-gray-600 leading-relaxed flex-grow text-sm">
+                  Advanced startup valuation with football field charts.
+                </p>
+                <div className="mt-6">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                    Featured Tool
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+            {/* FP&A Tools */}
+            <Link href="/fpa-tools" className="block">
+              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer h-full flex flex-col">
+                <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">FP&A Suite</h3>
+                <p className="text-gray-600 leading-relaxed flex-grow text-sm">
+                  Financial planning tools with automated reporting.
+                </p>
+                <div className="mt-6">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                    Coming Soon
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </div>
+
         </Container>
       </main>
 
