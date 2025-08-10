@@ -199,27 +199,44 @@ interface NewsEvent {
 }
 
 export default function ASPPToolsPage() {
-  const [selectedCompany, setSelectedCompany] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedCompany1, setSelectedCompany1] = useState<string>("");
+  const [selectedCompany2, setSelectedCompany2] = useState<string>("");
+  const [searchQuery1, setSearchQuery1] = useState<string>("");
+  const [searchQuery2, setSearchQuery2] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
-  const [filteredCompanies, setFilteredCompanies] = useState(SP100_COMPANIES);
-  const [companyData, setCompanyData] = useState<CompanyData | null>(null);
+  const [filteredCompanies1, setFilteredCompanies1] = useState(SP100_COMPANIES);
+  const [filteredCompanies2, setFilteredCompanies2] = useState(SP100_COMPANIES);
+  const [companyData1, setCompanyData1] = useState<CompanyData | null>(null);
+  const [companyData2, setCompanyData2] = useState<CompanyData | null>(null);
   const [newsEvents, setNewsEvents] = useState<NewsEvent[]>([]);
   const [isGenerated, setIsGenerated] = useState<boolean>(false);
 
-  // Filter companies based on search query
+  // Filter companies based on search queries
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredCompanies(SP100_COMPANIES);
+    if (searchQuery1.trim() === "") {
+      setFilteredCompanies1(SP100_COMPANIES);
     } else {
       const filtered = SP100_COMPANIES.filter(
         company =>
-          company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          company.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+          company.name.toLowerCase().includes(searchQuery1.toLowerCase()) ||
+          company.symbol.toLowerCase().includes(searchQuery1.toLowerCase())
       );
-      setFilteredCompanies(filtered);
+      setFilteredCompanies1(filtered);
     }
-  }, [searchQuery]);
+  }, [searchQuery1]);
+
+  useEffect(() => {
+    if (searchQuery2.trim() === "") {
+      setFilteredCompanies2(SP100_COMPANIES);
+    } else {
+      const filtered = SP100_COMPANIES.filter(
+        company =>
+          company.name.toLowerCase().includes(searchQuery2.toLowerCase()) ||
+          company.symbol.toLowerCase().includes(searchQuery2.toLowerCase())
+      );
+      setFilteredCompanies2(filtered);
+    }
+  }, [searchQuery2]);
 
   // Get today's date (adjusted for weekends)
   const getLatestTradingDay = (): string => {
@@ -244,7 +261,7 @@ export default function ASPPToolsPage() {
   }, []);
 
   // Mock function to fetch company data
-  const fetchCompanyData = async (symbol: string) => {
+  const fetchCompanyData = async (symbol: string): Promise<CompanyData> => {
     // TODO: Implement API call to fetch real company data
     // This would typically call a financial data API like Alpha Vantage, Yahoo Finance, etc.
     
@@ -306,8 +323,6 @@ export default function ASPPToolsPage() {
       priceHistory
     };
     
-    setCompanyData(mockData);
-    
     // Generate news events positioned on the chart
     const mockNewsEvents: NewsEvent[] = [
       {
@@ -353,55 +368,83 @@ export default function ASPPToolsPage() {
     ];
     
     setNewsEvents(mockNewsEvents);
-    setIsGenerated(true);
+    
+    return mockData;
   };
 
-  const handleCompanySelect = (symbol: string) => {
-    setSelectedCompany(symbol);
-    setSearchQuery("");
-    setCompanyData(null);
+  const handleCompanySelect = (symbol: string, companyNumber: 1 | 2) => {
+    if (companyNumber === 1) {
+      setSelectedCompany1(symbol);
+      setSearchQuery1("");
+    } else {
+      setSelectedCompany2(symbol);
+      setSearchQuery2("");
+    }
+    setCompanyData1(null);
+    setCompanyData2(null);
     setNewsEvents([]);
     setIsGenerated(false);
   };
 
   // Create chart data and options
   const createChartData = () => {
-    if (!companyData?.priceHistory) return null;
-
-    const labels = companyData.priceHistory.map(point => 
-      new Date(point.date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
-    );
+    const datasets = [];
     
-    const data = companyData.priceHistory.map(point => point.price);
-
-    return {
-      labels,
-      datasets: [
-        {
-          label: `${companyData.symbol} Share Price`,
-          data,
-          borderColor: 'rgb(220, 38, 38)',
-          backgroundColor: 'rgba(220, 38, 38, 0.1)',
+    if (companyData1?.priceHistory) {
+      const labels = companyData1.priceHistory.map(point => 
+        new Date(point.date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
+      );
+      
+      datasets.push({
+        label: `${companyData1.symbol} Share Price`,
+        data: companyData1.priceHistory.map(point => point.price),
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.1,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: 'rgb(59, 130, 246)',
+        pointHoverBorderColor: 'white',
+        pointHoverBorderWidth: 2,
+      });
+      
+      if (companyData2?.priceHistory) {
+        datasets.push({
+          label: `${companyData2.symbol} Share Price`,
+          data: companyData2.priceHistory.map(point => point.price),
+          borderColor: 'rgb(239, 68, 68)',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
           borderWidth: 2,
-          fill: true,
+          fill: false,
           tension: 0.1,
           pointRadius: 0,
           pointHoverRadius: 6,
-          pointHoverBackgroundColor: 'rgb(220, 38, 38)',
+          pointHoverBackgroundColor: 'rgb(239, 68, 68)',
           pointHoverBorderColor: 'white',
           pointHoverBorderWidth: 2,
-        }
-      ]
-    };
+        });
+      }
+      
+      return {
+        labels,
+        datasets
+      };
+    }
+    
+    return null;
   };
 
   const createChartOptions = () => {
-    if (!companyData?.priceHistory || !newsEvents) return {};
+    if (!companyData1?.priceHistory || !newsEvents) return {};
 
     // Calculate price range for Y-axis scaling with exactly 5 grid lines
-    const priceValues = companyData.priceHistory.map(p => p.price);
-    const minPrice = Math.min(...priceValues);
-    const maxPrice = Math.max(...priceValues);
+    const priceValues1 = companyData1.priceHistory.map(p => p.price);
+    const priceValues2 = companyData2?.priceHistory ? companyData2.priceHistory.map(p => p.price) : [];
+    const allPriceValues = [...priceValues1, ...priceValues2];
+    const minPrice = Math.min(...allPriceValues);
+    const maxPrice = Math.max(...allPriceValues);
     const priceRange = maxPrice - minPrice;
     
     // Calculate tick interval to get exactly 5 grid lines (4 intervals)
@@ -429,7 +472,7 @@ export default function ASPPToolsPage() {
     const annotations = newsEvents.map((event, index) => ({
       type: 'point' as const,
       xValue: event.chartPosition,
-      yValue: companyData.priceHistory[event.chartPosition]?.price || event.priceAtEvent, // Use actual price from line
+      yValue: companyData1.priceHistory[event.chartPosition]?.price || event.priceAtEvent, // Use actual price from line
       backgroundColor: eventColors[index % eventColors.length],
       borderColor: 'white',
       borderWidth: 2,
@@ -454,7 +497,15 @@ export default function ASPPToolsPage() {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false
+          display: true,
+          position: 'top' as const,
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: {
+              size: 12
+            }
+          }
         },
         tooltip: {
           mode: 'index' as const,
@@ -462,7 +513,7 @@ export default function ASPPToolsPage() {
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
           titleColor: 'white',
           bodyColor: 'white',
-          borderColor: 'rgb(220, 38, 38)',
+          borderColor: 'rgb(59, 130, 246)',
           borderWidth: 1,
           callbacks: {
             title: (context: { dataIndex: number }[]) => {
@@ -564,29 +615,62 @@ export default function ASPPToolsPage() {
             <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Company Selection</h2>
               
-              {/* Company Search */}
+              {/* Company 1 Search */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Company
+                  Company 1
                 </label>
                 <div className="relative">
                   <input
                     type="text"
                     placeholder="Search S&P 100 companies..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    value={searchQuery1}
+                    onChange={(e) => setSearchQuery1(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   />
                   <MagnifyingGlassIcon className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                 </div>
                 
-                {/* Company Suggestions */}
-                {searchQuery && filteredCompanies.length > 0 && (
+                {/* Company 1 Suggestions */}
+                {searchQuery1 && filteredCompanies1.length > 0 && (
                   <div className="mt-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg">
-                    {filteredCompanies.map((company) => (
+                    {filteredCompanies1.map((company) => (
                       <button
                         key={company.symbol}
-                        onClick={() => handleCompanySelect(company.symbol)}
+                        onClick={() => handleCompanySelect(company.symbol, 1)}
+                        className="w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="font-medium text-gray-900">{company.symbol}</div>
+                        <div className="text-sm text-gray-600">{company.name}</div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Company 2 Search */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Company 2 (Optional)
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search S&P 100 companies..."
+                    value={searchQuery2}
+                    onChange={(e) => setSearchQuery2(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  />
+                  <MagnifyingGlassIcon className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+                </div>
+                
+                {/* Company 2 Suggestions */}
+                {searchQuery2 && filteredCompanies2.length > 0 && (
+                  <div className="mt-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg">
+                    {filteredCompanies2.map((company) => (
+                      <button
+                        key={company.symbol}
+                        onClick={() => handleCompanySelect(company.symbol, 2)}
                         className="w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                       >
                         <div className="font-medium text-gray-900">{company.symbol}</div>
@@ -626,61 +710,109 @@ export default function ASPPToolsPage() {
               </div>
 
                              {/* Company Summary Table */}
-               {isGenerated && companyData && (
+               {isGenerated && companyData1 && (
                  <div className="border-t border-gray-200 pt-6">
                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Company Summary</h3>
-                   <div className="space-y-3 text-sm">
-                     <div className="flex justify-between">
-                       <span className="text-gray-600">Ticker:</span>
-                       <span className="font-medium">{companyData.symbol}</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span className="text-gray-600">Currency:</span>
-                       <span className="font-medium">{companyData.currency}</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span className="text-gray-600">Current Price:</span>
-                       <span className="font-medium">${companyData.currentPrice.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span className="text-gray-600">12M High:</span>
-                       <span className="font-medium">${companyData.high12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span className="text-gray-600">12M Low:</span>
-                       <span className="font-medium">${companyData.low12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span className="text-gray-600">12M Average:</span>
-                       <span className="font-medium">${companyData.avg12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span className="text-gray-600">12M Change:</span>
-                       <span className={`font-medium ${companyData.change12m >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                         {companyData.change12m >= 0 ? '+' : ''}{companyData.change12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
-                       </span>
-                     </div>
-                     <div className="flex justify-between">
-                       <span className="text-gray-600">6M Change:</span>
-                       <span className={`font-medium ${companyData.change6m >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                         {companyData.change6m >= 0 ? '+' : ''}{companyData.change6m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
-                       </span>
+                   
+                   {/* Company 1 Summary */}
+                   <div className="mb-4">
+                     <h4 className="text-md font-medium text-gray-800 mb-2">{companyData1.symbol}</h4>
+                     <div className="space-y-2 text-sm">
+                       <div className="flex justify-between">
+                         <span className="text-gray-600">Currency:</span>
+                         <span className="font-medium">{companyData1.currency}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600">Current Price:</span>
+                         <span className="font-medium">${companyData1.currentPrice.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600">12M High:</span>
+                         <span className="font-medium">${companyData1.high12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600">12M Low:</span>
+                         <span className="font-medium">${companyData1.low12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600">12M Average:</span>
+                         <span className="font-medium">${companyData1.avg12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600">12M Change:</span>
+                         <span className={`font-medium ${companyData1.change12m >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                           {companyData1.change12m >= 0 ? '+' : ''}{companyData1.change12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
+                         </span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600">6M Change:</span>
+                         <span className={`font-medium ${companyData1.change6m >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                           {companyData1.change6m >= 0 ? '+' : ''}{companyData1.change6m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
+                         </span>
+                       </div>
                      </div>
                    </div>
+
+                   {/* Company 2 Summary */}
+                   {companyData2 && (
+                     <div className="border-t border-gray-200 pt-4">
+                       <h4 className="text-md font-medium text-gray-800 mb-2">{companyData2.symbol}</h4>
+                       <div className="space-y-2 text-sm">
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">Currency:</span>
+                           <span className="font-medium">{companyData2.currency}</span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">Current Price:</span>
+                           <span className="font-medium">${companyData2.currentPrice.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">12M High:</span>
+                           <span className="font-medium">${companyData2.high12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">12M Low:</span>
+                           <span className="font-medium">${companyData2.low12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">12M Average:</span>
+                           <span className="font-medium">${companyData2.avg12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">12M Change:</span>
+                           <span className={`font-medium ${companyData2.change12m >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                             {companyData2.change12m >= 0 ? '+' : ''}{companyData2.change12m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
+                           </span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">6M Change:</span>
+                           <span className={`font-medium ${companyData2.change6m >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                             {companyData2.change6m >= 0 ? '+' : ''}{companyData2.change6m.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
+                           </span>
+                         </div>
+                       </div>
+                     </div>
+                   )}
                  </div>
                )}
 
                                {/* Generate Button */}
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <button
-                    onClick={() => {
-                      if (selectedCompany) {
-                        fetchCompanyData(selectedCompany);
+                    onClick={async () => {
+                      if (selectedCompany1) {
+                        const data1 = await fetchCompanyData(selectedCompany1);
+                        setCompanyData1(data1);
+                        if (selectedCompany2) {
+                          const data2 = await fetchCompanyData(selectedCompany2);
+                          setCompanyData2(data2);
+                        }
+                        setIsGenerated(true);
                       }
                     }}
-                    disabled={!selectedCompany}
+                    disabled={!selectedCompany1}
                     className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-                      selectedCompany
+                      selectedCompany1
                         ? 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg transform hover:scale-105'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
@@ -696,7 +828,7 @@ export default function ASPPToolsPage() {
             <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Price Tracker</h2>
               
-                             {!selectedCompany ? (
+                             {!selectedCompany1 ? (
                  <div className="flex items-center justify-center text-gray-500" style={{ aspectRatio: '16/9' }}>
                    <div className="text-center">
                      <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
