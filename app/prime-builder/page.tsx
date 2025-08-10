@@ -13,6 +13,7 @@ export default function PrimeBuilderPage() {
   const [showFirstBox, setShowFirstBox] = useState<boolean>(false);
   const [showSecondBox, setShowSecondBox] = useState<boolean>(false);
   const [showThirdBox, setShowThirdBox] = useState<boolean>(false);
+  const [showProgressCheck, setShowProgressCheck] = useState<boolean>(false);
 
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [selectedSubOption, setSelectedSubOption] = useState<string>("");
@@ -69,13 +70,14 @@ export default function PrimeBuilderPage() {
       setIsLoading(true);
       setIsGenerated(true);
       
-      // Reset all animation states
-      setShowFlow(false);
-      setShowFirstBox(false);
-      setShowSecondBox(false);
-      setShowThirdBox(false);
-      
-             // Start the animation sequence after 3 seconds
+             // Reset all animation states
+       setShowFlow(false);
+       setShowFirstBox(false);
+       setShowSecondBox(false);
+       setShowThirdBox(false);
+       setShowProgressCheck(false);
+       
+       // Start the animation sequence after 1.5 seconds (reduced by half)
        setTimeout(() => {
          setIsLoading(false);
          setShowFlow(true);
@@ -92,22 +94,28 @@ export default function PrimeBuilderPage() {
              setTimeout(() => {
                setShowThirdBox(true);
                
-               // Simulate progress updates
+               // Show progress check loader after all boxes are visible
                setTimeout(() => {
-                 setBusinessComposerProgress({ total: 85, aiCompleted: 85, userConfirmed: 0 });
-               }, 1000);
-               
-               setTimeout(() => {
-                 setModelBuilderProgress({ total: 60, aiCompleted: 60, userConfirmed: 0 });
-               }, 1500);
-               
-               setTimeout(() => {
-                 setInvestorPresentationProgress({ total: 0, aiCompleted: 0, userConfirmed: 0 });
-               }, 2000);
+                 setShowProgressCheck(true);
+                 
+                 // Simulate progress updates after progress check
+                 setTimeout(() => {
+                   setShowProgressCheck(false);
+                   setBusinessComposerProgress({ total: 85, aiCompleted: 85, userConfirmed: 0 });
+                 }, 1500);
+                 
+                 setTimeout(() => {
+                   setModelBuilderProgress({ total: 60, aiCompleted: 60, userConfirmed: 0 });
+                 }, 2000);
+                 
+                 setTimeout(() => {
+                   setInvestorPresentationProgress({ total: 0, aiCompleted: 0, userConfirmed: 0 });
+                 }, 2500);
+               }, 500);
              }, 500);
            }, 500);
          }, 300);
-       }, 3000);
+       }, 1500);
     }
   };
 
