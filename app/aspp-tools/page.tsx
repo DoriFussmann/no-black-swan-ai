@@ -518,7 +518,7 @@ export default function ASPPToolsPage() {
           callbacks: {
             title: (context: { dataIndex: number }[]) => {
               const index = context[0].dataIndex;
-              const date = companyData?.priceHistory[index]?.date;
+              const date = companyData1?.priceHistory[index]?.date;
               return date ? new Date(date).toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
