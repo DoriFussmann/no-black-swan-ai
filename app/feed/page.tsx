@@ -94,8 +94,6 @@ export default function FeedPage() {
     };
 
     const textLower = text.toLowerCase();
-    const words = textLower.split(/\s+/);
-    const sentences = textLower.split(/[.!?]+/).filter(s => s.trim().length > 0);
 
     // Helper function to check for multiple keywords in context
     const hasContext = (sentence: string, keywords: string[], requiredCount: number = 1) => {
@@ -510,10 +508,10 @@ export default function FeedPage() {
             const dataArray = Array.isArray(parsedData) ? parsedData : [];
             dataArray.push(dataToStore);
             localStorage.setItem('businessPlanData', JSON.stringify(dataArray));
-          } catch (error) {
-            // If parsing fails, start fresh with the new data
-            localStorage.setItem('businessPlanData', JSON.stringify([dataToStore]));
-          }
+                  } catch {
+          // If parsing fails, start fresh with the new data
+          localStorage.setItem('businessPlanData', JSON.stringify([dataToStore]));
+        }
         } else {
           localStorage.setItem('businessPlanData', JSON.stringify([dataToStore]));
         }

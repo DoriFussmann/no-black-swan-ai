@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export default function MapPage() {
   // Progress tracking state for each topic
-  const [topicProgress, setTopicProgress] = useState({
+  const [topicProgress] = useState({
     executiveSummary: { total: 0, aiCompleted: 0, userConfirmed: 0 },
     businessOverview: { total: 0, aiCompleted: 0, userConfirmed: 0 },
     marketAnalysis: { total: 0, aiCompleted: 0, userConfirmed: 0 },

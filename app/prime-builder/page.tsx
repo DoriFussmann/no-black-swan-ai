@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { HomeIcon, BuildingOfficeIcon, DocumentTextIcon, ChartBarIcon, CogIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, BuildingOfficeIcon, DocumentTextIcon, ChartBarIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import Container from "@/components/Container";
 
 export default function PrimeBuilderPage() {
-  const [selectedTool, setSelectedTool] = useState<string>("");
   const [isGenerated, setIsGenerated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showFlow, setShowFlow] = useState<boolean>(false);
@@ -216,7 +215,7 @@ export default function PrimeBuilderPage() {
                   <div className="flex items-center justify-center text-gray-500" style={{ aspectRatio: '16/9' }}>
                     <div className="text-center">
                       <BuildingOfficeIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                      <p>Select what you'd like to do today</p>
+                      <p>Select what you&apos;d like to do today</p>
                     </div>
                   </div>
                 ) : !selectedSubOption ? (
@@ -475,7 +474,7 @@ export default function PrimeBuilderPage() {
                          <div className="bg-gray-50 rounded-lg p-4">
                           <h4 className="font-medium text-gray-900 mb-2">How it works:</h4>
                           <p className="text-gray-600 text-sm">
-                            To create an Investor Presentation, you'll need to first use the Business Composer to create your business plan, 
+                            To create an Investor Presentation, you&apos;ll need to first use the Business Composer to create your business plan, 
                             then use the Model Builder to create your financial model. These two components will be automatically combined 
                             to generate your professional Investor Presentation.
                           </p>
