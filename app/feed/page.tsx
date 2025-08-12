@@ -16,7 +16,8 @@ export default function FeedPage() {
     operations: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 },
     management: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 },
     financialPlan: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 },
-    riskAnalysis: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 }
+    riskAnalysis: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 },
+    benchmarking: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 }
   });
 
   // Data input states
@@ -69,7 +70,8 @@ export default function FeedPage() {
         operations: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 },
         management: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 },
         financialPlan: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 },
-        riskAnalysis: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 }
+        riskAnalysis: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 },
+        benchmarking: { total: 0, userShared: 0, aiModified: 0, userConfirmed: 0 }
       });
       setCompanyName("");
       setFileInput(null);
@@ -90,7 +92,8 @@ export default function FeedPage() {
       operations: 0,
       management: 0,
       financialPlan: 0,
-      riskAnalysis: 0
+      riskAnalysis: 0,
+      benchmarking: 0
     };
 
     const textLower = text.toLowerCase();
@@ -400,6 +403,32 @@ export default function FeedPage() {
     }
     
     questionsAnswered.riskAnalysis = Math.min(riskAnalysisScore, 3);
+
+    // Benchmarking Analysis (4 questions)
+    let benchmarkingScore = 0;
+    
+    // Industry benchmarks
+    if (hasContext(textLower, ['benchmark', 'industry standard', 'average', 'median', 'percentile', 'comparison'])) {
+      benchmarkingScore++;
+    }
+    
+    // Competitor analysis
+    if (hasContext(textLower, ['competitor', 'rival', 'peer', 'similar company', 'market leader', 'top player'])) {
+      benchmarkingScore++;
+    }
+    
+    // Performance metrics
+    if (hasContext(textLower, ['kpi', 'metric', 'performance', 'efficiency', 'productivity', 'ratio']) && 
+        hasFinancialData(text)) {
+      benchmarkingScore++;
+    }
+    
+    // Best practices
+    if (hasContext(textLower, ['best practice', 'standard', 'guideline', 'framework', 'methodology', 'approach'])) {
+      benchmarkingScore++;
+    }
+    
+    questionsAnswered.benchmarking = Math.min(benchmarkingScore, 4);
 
     return questionsAnswered;
   };
