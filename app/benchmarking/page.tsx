@@ -141,6 +141,78 @@ export default function BenchmarkingPage() {
   const [sortByMarketCap, setSortByMarketCap] = useState<boolean>(false);
   const [addCompanyQuery, setAddCompanyQuery] = useState<string>("");
   const [filteredAddCompanies, setFilteredAddCompanies] = useState(SP100_COMPANIES);
+  const [showBenchmarkMetrics, setShowBenchmarkMetrics] = useState<boolean>(false);
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState<boolean>(false);
+  const [showAddSuggestions, setShowAddSuggestions] = useState<boolean>(false);
+  const [addMetricQuery, setAddMetricQuery] = useState<string>("");
+  const [showAddMetricSuggestions, setShowAddMetricSuggestions] = useState<boolean>(false);
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+  const [selectedMetrics, setSelectedMetrics] = useState<Array<{id: string, name: string, checked: boolean}>>([
+    { id: "1", name: "EV / LTM EBITDA", checked: true },
+    { id: "2", name: "EV / LTM Sales", checked: true },
+    { id: "3", name: "LTM EBITDA Margin (%)", checked: true },
+    { id: "4", name: "LTM Sales Growth (%)", checked: true }
+  ]);
+
+  // Available metrics that can be added
+  const availableMetrics = [
+    { id: "5", name: "Gross Profit (%)" },
+    { id: "6", name: "P / NTM Earnings" },
+    { id: "7", name: "ROIC (%)" },
+    { id: "8", name: "FCF Conversion (%)" }
+  ];
+
+  // Centralized function to get short company name for display
+  const getShortCompanyName = (fullName: string): string => {
+    // Remove common suffixes and clean up the name
+    let shortName = fullName
+      .replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC|Incorporated)$/i, '')
+      .replace(/\.com$/i, '')
+      .replace(/^The\s+/i, '')
+      .trim();
+    
+    // Special cases for specific companies
+    const specialCases: { [key: string]: string } = {
+      'International Business Machines': 'IBM',
+      'Bank of America': 'BAML',
+      'Johnson & Johnson': 'J&J',
+      'UnitedHealth Group': 'UHC',
+      'Procter & Gamble': 'P&G',
+      'AT&T': 'AT&T',
+      'Home Depot': 'HomeDepot',
+      'Wells Fargo': 'Wells Fargo',
+      'Goldman Sachs': 'GS',
+      'Exxon Mobil': 'Exxon',
+      'Chevron': 'Chevron',
+      'Mastercard': 'Mastercard',
+      'Visa': 'Visa',
+      'Coca-Cola': 'Coca-Cola',
+      'PepsiCo': 'PepsiCo',
+      'Eli Lilly': 'Eli Lilly',
+      'Pfizer': 'Pfizer',
+      'AbbVie': 'AbbVie',
+      'JPMorgan Chase': 'JPM',
+      'Berkshire Hathaway': 'Berkshire',
+      'Meta Platforms': 'Meta',
+      'Alphabet': 'Alphabet',
+      'NVIDIA': 'NVIDIA',
+      'Tesla': 'Tesla',
+      'Adobe': 'Adobe',
+      'Apple': 'Apple',
+      'Microsoft': 'Microsoft',
+      'Amazon': 'Amazon',
+      'United Parcel Service': 'UPS',
+      'Texas Instruments': 'TI'
+    };
+    
+    // Check if we have a special case
+    if (specialCases[shortName]) {
+      return specialCases[shortName];
+    }
+    
+    // If no special case, return the cleaned name (truncated if too long)
+    return shortName.length > 15 ? shortName.substring(0, 12) + '...' : shortName;
+  };
 
   // Filter companies based on search queries
   useEffect(() => {
@@ -187,13 +259,13 @@ export default function BenchmarkingPage() {
       { id: "11", name: "Pfizer", symbol: "PFE" },
       { id: "12", name: "AbbVie", symbol: "ABBV" },
       { id: "13", name: "JPM", symbol: "JPM" },
-      { id: "14", name: "Bank of America", symbol: "BAC" },
+      { id: "14", name: "BAML", symbol: "BAC" },
       { id: "15", name: "Wells Fargo", symbol: "WFC" },
-      { id: "16", name: "Goldman Sachs", symbol: "GS" },
-      { id: "17", name: "Exxon Mobil", symbol: "XOM" },
+      { id: "16", name: "GS", symbol: "GS" },
+      { id: "17", name: "Exxon", symbol: "XOM" },
       { id: "18", name: "Chevron", symbol: "CVX" },
       { id: "19", name: "UHC", symbol: "UNH" },
-      { id: "20", name: "Home Depot", symbol: "HD" },
+      { id: "20", name: "HomeDepot", symbol: "HD" },
       { id: "21", name: "Mastercard", symbol: "MA" },
       { id: "22", name: "Visa", symbol: "V" },
       { id: "23", name: "Coca-Cola", symbol: "KO" },
@@ -202,7 +274,7 @@ export default function BenchmarkingPage() {
 
     // Get the selected company symbol
     const selectedCompanySymbol = selectedCompany ? SP100_COMPANIES.find(c => 
-      c.name.replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC)$/i, '') === selectedCompany
+      getShortCompanyName(c.name) === selectedCompany
     )?.symbol : null;
 
     // Filter out the chosen company from the pool
@@ -224,8 +296,7 @@ export default function BenchmarkingPage() {
   const handleAddCompanySelect = (symbol: string) => {
     const company = SP100_COMPANIES.find(c => c.symbol === symbol);
     if (company) {
-      const shortName = company.name
-        .replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC)$/i, '');
+      const shortName = getShortCompanyName(company.name); // Use the short name for display
       
       // Add the company to comparable companies if it's not already there
       const isAlreadyAdded = comparableCompanies.some(comp => comp.symbol === symbol);
@@ -245,12 +316,11 @@ export default function BenchmarkingPage() {
   const handleCompanySelect = (symbol: string) => {
     const company = SP100_COMPANIES.find(c => c.symbol === symbol);
     if (company) {
-      // Remove common suffixes like "Inc.", "Corporation", "Co.", etc.
-      const shortName = company.name
-        .replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC)$/i, '');
+      // Use the short name for display
+      const shortName = getShortCompanyName(company.name);
       setSelectedCompany(shortName);
-      // Set the search query to show the selected company name
-      setSearchQuery(shortName);
+      // Clear the search query to hide the selected company name from the input
+      setSearchQuery("");
       
       // Reset the UI state when a new company is selected
       setIsGenerated(false);
@@ -259,19 +329,44 @@ export default function BenchmarkingPage() {
       setBenchmarkData([]);
     } else {
       setSelectedCompany(symbol);
-      setSearchQuery(symbol);
+      setSearchQuery("");
     }
   };
 
   // Handle checkbox toggle for comparable companies
   const toggleComparableCompany = (id: string) => {
     setComparableCompanies(prev => 
-      prev.map(company => 
-        company.id === id 
-          ? { ...company, checked: !company.checked }
-          : company
+      prev.filter(company => company.id !== id)
+    );
+  };
+
+  // Handle checkbox toggle for benchmark metrics
+  const toggleBenchmarkMetric = (id: string) => {
+    setSelectedMetrics(prev => 
+      prev.map(metric => 
+        metric.id === id 
+          ? { ...metric, checked: !metric.checked }
+          : metric
       )
     );
+  };
+
+  // Handle adding a metric
+  const handleAddMetric = (metricName: string) => {
+    const metric = availableMetrics.find(m => m.name === metricName);
+    if (metric) {
+      // Check if metric is already added
+      const isAlreadyAdded = selectedMetrics.some(m => m.name === metricName);
+      if (!isAlreadyAdded) {
+        const newMetric = {
+          id: metric.id,
+          name: metric.name,
+          checked: true
+        };
+        setSelectedMetrics([...selectedMetrics, newMetric]);
+      }
+    }
+    setAddMetricQuery("");
   };
 
   // Generate benchmark data with specific company symbol
@@ -319,19 +414,20 @@ export default function BenchmarkingPage() {
 
   // Generate benchmark data
   const generateBenchmark = () => {
-    // Get the selected company symbol from the full company name
+    // Get the selected company symbol from the short company name
     const selectedCompanySymbol = selectedCompany ? SP100_COMPANIES.find(c => 
-      c.name.replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC)$/i, '') === selectedCompany
+      getShortCompanyName(c.name) === selectedCompany
     )?.symbol : "AAPL";
 
     generateBenchmarkWithCompany(selectedCompanySymbol);
+    setShowBenchmarkMetrics(true);
   };
 
   // Mock data for EV/LTM EBITDA
   const getEBITDAData = () => {
-    // Get the selected company symbol from the full company name
+    // Get the selected company symbol from the short company name
     const selectedCompanySymbol = selectedCompany ? SP100_COMPANIES.find(c => 
-      c.name.replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC)$/i, '') === selectedCompany
+      getShortCompanyName(c.name) === selectedCompany
     )?.symbol : "AAPL";
 
     const mockData = [
@@ -348,10 +444,10 @@ export default function BenchmarkingPage() {
       { name: "Pfizer", symbol: "PFE", value: 12.8, isSelected: selectedCompanySymbol === "PFE" },
       { name: "AbbVie", symbol: "ABBV", value: 18.9, isSelected: selectedCompanySymbol === "ABBV" },
       { name: "JPM", symbol: "JPM", value: 11.4, isSelected: selectedCompanySymbol === "JPM" },
-      { name: "Bank of America", symbol: "BAC", value: 9.7, isSelected: selectedCompanySymbol === "BAC" },
+      { name: "BAML", symbol: "BAC", value: 9.7, isSelected: selectedCompanySymbol === "BAC" },
       { name: "Wells Fargo", symbol: "WFC", value: 8.3, isSelected: selectedCompanySymbol === "WFC" },
-      { name: "Goldman Sachs", symbol: "GS", value: 13.6, isSelected: selectedCompanySymbol === "GS" },
-      { name: "Exxon Mobil", symbol: "XOM", value: 7.2, isSelected: selectedCompanySymbol === "XOM" },
+      { name: "GS", symbol: "GS", value: 13.6, isSelected: selectedCompanySymbol === "GS" },
+      { name: "Exxon", symbol: "XOM", value: 7.2, isSelected: selectedCompanySymbol === "XOM" },
       { name: "Chevron", symbol: "CVX", value: 8.9, isSelected: selectedCompanySymbol === "CVX" },
       { name: "UHC", symbol: "UNH", value: 16.4, isSelected: selectedCompanySymbol === "UNH" },
       { name: "Home Depot", symbol: "HD", value: 13.8, isSelected: selectedCompanySymbol === "HD" },
@@ -395,9 +491,9 @@ export default function BenchmarkingPage() {
 
   // Mock data for additional metrics
   const getEVSalesData = () => {
-    // Get the selected company symbol from the full company name
+    // Get the selected company symbol from the short company name
     const selectedCompanySymbol = selectedCompany ? SP100_COMPANIES.find(c => 
-      c.name.replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC)$/i, '') === selectedCompany
+      getShortCompanyName(c.name) === selectedCompany
     )?.symbol : "AAPL";
 
     const mockData = [
@@ -414,10 +510,10 @@ export default function BenchmarkingPage() {
       { name: "Pfizer", symbol: "PFE", value: 3.8, isSelected: selectedCompanySymbol === "PFE" },
       { name: "AbbVie", symbol: "ABBV", value: 6.1, isSelected: selectedCompanySymbol === "ABBV" },
       { name: "JPM", symbol: "JPM", value: 2.9, isSelected: selectedCompanySymbol === "JPM" },
-      { name: "Bank of America", symbol: "BAC", value: 2.1, isSelected: selectedCompanySymbol === "BAC" },
+      { name: "BAML", symbol: "BAC", value: 2.1, isSelected: selectedCompanySymbol === "BAC" },
       { name: "Wells Fargo", symbol: "WFC", value: 1.8, isSelected: selectedCompanySymbol === "WFC" },
-      { name: "Goldman Sachs", symbol: "GS", value: 3.4, isSelected: selectedCompanySymbol === "GS" },
-      { name: "Exxon Mobil", symbol: "XOM", value: 1.2, isSelected: selectedCompanySymbol === "XOM" },
+      { name: "GS", symbol: "GS", value: 3.4, isSelected: selectedCompanySymbol === "GS" },
+      { name: "Exxon", symbol: "XOM", value: 1.2, isSelected: selectedCompanySymbol === "XOM" },
       { name: "Chevron", symbol: "CVX", value: 1.5, isSelected: selectedCompanySymbol === "CVX" },
       { name: "UHC", symbol: "UNH", value: 5.8, isSelected: selectedCompanySymbol === "UNH" },
       { name: "Home Depot", symbol: "HD", value: 2.3, isSelected: selectedCompanySymbol === "HD" },
@@ -460,9 +556,9 @@ export default function BenchmarkingPage() {
   };
 
   const getEBITDAMarginData = () => {
-    // Get the selected company symbol from the full company name
+    // Get the selected company symbol from the short company name
     const selectedCompanySymbol = selectedCompany ? SP100_COMPANIES.find(c => 
-      c.name.replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC)$/i, '') === selectedCompany
+      getShortCompanyName(c.name) === selectedCompany
     )?.symbol : "AAPL";
 
     const mockData = [
@@ -479,10 +575,10 @@ export default function BenchmarkingPage() {
       { name: "Pfizer", symbol: "PFE", value: 25.4, isSelected: selectedCompanySymbol === "PFE" },
       { name: "AbbVie", symbol: "ABBV", value: 35.7, isSelected: selectedCompanySymbol === "ABBV" },
       { name: "JPM", symbol: "JPM", value: 18.2, isSelected: selectedCompanySymbol === "JPM" },
-      { name: "Bank of America", symbol: "BAC", value: 15.8, isSelected: selectedCompanySymbol === "BAC" },
+      { name: "BAML", symbol: "BAC", value: 15.8, isSelected: selectedCompanySymbol === "BAC" },
       { name: "Wells Fargo", symbol: "WFC", value: 12.4, isSelected: selectedCompanySymbol === "WFC" },
-      { name: "Goldman Sachs", symbol: "GS", value: 22.6, isSelected: selectedCompanySymbol === "GS" },
-      { name: "Exxon Mobil", symbol: "XOM", value: 8.9, isSelected: selectedCompanySymbol === "XOM" },
+      { name: "GS", symbol: "GS", value: 22.6, isSelected: selectedCompanySymbol === "GS" },
+      { name: "Exxon", symbol: "XOM", value: 8.9, isSelected: selectedCompanySymbol === "XOM" },
       { name: "Chevron", symbol: "CVX", value: 11.2, isSelected: selectedCompanySymbol === "CVX" },
       { name: "UHC", symbol: "UNH", value: 31.5, isSelected: selectedCompanySymbol === "UNH" },
       { name: "Home Depot", symbol: "HD", value: 14.8, isSelected: selectedCompanySymbol === "HD" },
@@ -525,9 +621,9 @@ export default function BenchmarkingPage() {
   };
 
   const getSalesGrowthData = () => {
-    // Get the selected company symbol from the full company name
+    // Get the selected company symbol from the short company name
     const selectedCompanySymbol = selectedCompany ? SP100_COMPANIES.find(c => 
-      c.name.replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC)$/i, '') === selectedCompany
+      getShortCompanyName(c.name) === selectedCompany
     )?.symbol : "AAPL";
 
     const mockData = [
@@ -544,10 +640,10 @@ export default function BenchmarkingPage() {
       { name: "Pfizer", symbol: "PFE", value: 4.2, isSelected: selectedCompanySymbol === "PFE" },
       { name: "AbbVie", symbol: "ABBV", value: 12.7, isSelected: selectedCompanySymbol === "ABBV" },
       { name: "JPM", symbol: "JPM", value: 7.8, isSelected: selectedCompanySymbol === "JPM" },
-      { name: "Bank of America", symbol: "BAC", value: 5.3, isSelected: selectedCompanySymbol === "BAC" },
+      { name: "BAML", symbol: "BAC", value: 5.3, isSelected: selectedCompanySymbol === "BAC" },
       { name: "Wells Fargo", symbol: "WFC", value: 3.9, isSelected: selectedCompanySymbol === "WFC" },
-      { name: "Goldman Sachs", symbol: "GS", value: 9.1, isSelected: selectedCompanySymbol === "GS" },
-      { name: "Exxon Mobil", symbol: "XOM", value: 2.4, isSelected: selectedCompanySymbol === "XOM" },
+      { name: "GS", symbol: "GS", value: 9.1, isSelected: selectedCompanySymbol === "GS" },
+      { name: "Exxon", symbol: "XOM", value: 2.4, isSelected: selectedCompanySymbol === "XOM" },
       { name: "Chevron", symbol: "CVX", value: 3.1, isSelected: selectedCompanySymbol === "CVX" },
       { name: "UHC", symbol: "UNH", value: 12.8, isSelected: selectedCompanySymbol === "UNH" },
       { name: "Home Depot", symbol: "HD", value: 4.2, isSelected: selectedCompanySymbol === "HD" },
@@ -615,6 +711,12 @@ export default function BenchmarkingPage() {
                       setComparableCompanies([]);
                       setShowComparables(false);
                       setBenchmarkData([]);
+                      setShowBenchmarkMetrics(false);
+                      setShowSearchSuggestions(false);
+                      setShowAddSuggestions(false);
+                      setAddMetricQuery("");
+                      setShowAddMetricSuggestions(false);
+                      setRefreshTrigger(0);
                     }}
                     className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
                   >
@@ -653,6 +755,8 @@ export default function BenchmarkingPage() {
                              placeholder="Enter Company Name"
                              value={searchQuery}
                              onChange={(e) => setSearchQuery(e.target.value)}
+                             onFocus={() => setShowSearchSuggestions(true)}
+                             onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
                              className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                            />
                          </div>
@@ -670,16 +774,16 @@ export default function BenchmarkingPage() {
                        </div>
                      
                      {/* Company Suggestions */}
-                     {searchQuery && filteredCompanies.length > 0 && (
+                     {((searchQuery && filteredCompanies.length > 0) || (showSearchSuggestions && !searchQuery)) && (
                        <div className="mt-1 max-h-24 overflow-y-auto border border-gray-200 rounded-lg bg-white shadow-sm">
-                         {filteredCompanies.slice(0, 2).map((company) => (
+                         {(searchQuery ? filteredCompanies : SP100_COMPANIES).slice(0, 2).map((company) => (
                            <button
                              key={company.symbol}
                              onClick={() => handleCompanySelect(company.symbol)}
                              className="w-full text-left px-3 py-1 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 text-xs"
                            >
                              <div className="font-medium text-gray-900">{company.symbol}</div>
-                             <div className="text-xs text-gray-600">{company.name}</div>
+                             <div className="text-xs text-gray-600">{getShortCompanyName(company.name)}</div>
                            </button>
                          ))}
                        </div>
@@ -714,13 +818,14 @@ export default function BenchmarkingPage() {
                       {/* Add Comparable Company Section */}
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <div className="mb-3">
-                          <span className="text-sm font-medium text-gray-700 block mb-2">Add Company:</span>
                           <div className="flex gap-2">
                             <input
                               type="text"
                               placeholder="Enter Company Name"
                               value={addCompanyQuery}
                               onChange={(e) => setAddCompanyQuery(e.target.value)}
+                              onFocus={() => setShowAddSuggestions(true)}
+                              onBlur={() => setTimeout(() => setShowAddSuggestions(false), 200)}
                               className="w-[70%] px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                             <button
@@ -732,8 +837,7 @@ export default function BenchmarkingPage() {
                                     c.symbol.toLowerCase().includes(addCompanyQuery.toLowerCase())
                                   );
                                   if (company) {
-                                    const shortName = company.name
-                                      .replace(/\s+(Inc\.|Corporation|Corp\.|Company|Co\.|Limited|Ltd\.|PLC|LLC)$/i, '');
+                                    const shortName = getShortCompanyName(company.name); // Use the short name for display
                                     
                                     // Add the company to comparable companies if it's not already there
                                     const isAlreadyAdded = comparableCompanies.some(comp => comp.symbol === company.symbol);
@@ -757,24 +861,128 @@ export default function BenchmarkingPage() {
                           </div>
                           
                           {/* Company Suggestions for Add */}
-                          {addCompanyQuery && filteredAddCompanies.length > 0 && (
+                          {((addCompanyQuery && filteredAddCompanies.length > 0) || (showAddSuggestions && !addCompanyQuery)) && (
                             <div className="mt-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg">
-                              {filteredAddCompanies.map((company) => (
+                              {(addCompanyQuery ? filteredAddCompanies : SP100_COMPANIES).slice(0, 5).map((company) => (
                                 <button
                                   key={company.symbol}
                                   onClick={() => handleAddCompanySelect(company.symbol)}
                                   className="w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                                 >
                                   <div className="font-medium text-gray-900">{company.symbol}</div>
-                                  <div className="text-sm text-gray-600">{company.name}</div>
+                                  <div className="text-sm text-gray-600">{getShortCompanyName(company.name)}</div>
                                 </button>
                               ))}
                             </div>
                           )}
                         </div>
                       </div>
+
+                      {/* Refresh Button */}
+                      <div className="mt-4">
+                        <button
+                          onClick={() => {
+                            if (selectedCompany) {
+                              setRefreshTrigger(prev => prev + 1);
+                              generateBenchmark();
+                            }
+                          }}
+                          disabled={!selectedCompany || comparableCompanies.length === 0}
+                          className={`w-full px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
+                            selectedCompany && comparableCompanies.length > 0
+                              ? 'bg-blue-600 text-white hover:bg-blue-700'
+                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          }`}
+                        >
+                          Refresh
+                        </button>
+                      </div>
                     </div>
                   )}
+
+                                    {/* Benchmark Button */}
+                                    <div className="mt-6 pt-6 border-t-2 border-gray-300">
+                                      <button
+                                        onClick={generateBenchmark}
+                                        disabled={!selectedCompany}
+                                        className={`w-full px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
+                                          selectedCompany
+                                            ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        }`}
+                                      >
+                                        Benchmark
+                                      </button>
+                                    </div>
+
+                                    {/* Benchmark Metrics Selection */}
+                                    {showBenchmarkMetrics && (
+                                      <div className="mt-6 pt-6 border-t border-gray-200">
+                                        <h3 className="text-sm font-medium text-gray-700 mb-4">Benchmark Metrics</h3>
+                                        <div className="space-y-2">
+                                          {selectedMetrics.map((metric) => (
+                                            <div key={metric.id} className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
+                                              <input
+                                                type="checkbox"
+                                                id={metric.id}
+                                                checked={metric.checked}
+                                                onChange={() => toggleBenchmarkMetric(metric.id)}
+                                                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                                              />
+                                              <label htmlFor={metric.id} className="flex-1 cursor-pointer">
+                                                <div className="text-xs font-medium text-gray-900">{metric.name}</div>
+                                              </label>
+                                            </div>
+                                          ))}
+                                        </div>
+
+                                        {/* Add Metric Section */}
+                                        <div className="mt-4 pt-4 border-t border-gray-200">
+                                          <div className="mb-3">
+                                            <div className="flex gap-2">
+                                              <input
+                                                type="text"
+                                                placeholder="Add Metric"
+                                                value={addMetricQuery}
+                                                onChange={(e) => setAddMetricQuery(e.target.value)}
+                                                onFocus={() => setShowAddMetricSuggestions(true)}
+                                                onBlur={() => setTimeout(() => setShowAddMetricSuggestions(false), 200)}
+                                                className="w-[70%] px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                              />
+                                              <button
+                                                onClick={() => {
+                                                  if (addMetricQuery.trim()) {
+                                                    handleAddMetric(addMetricQuery.trim());
+                                                  }
+                                                }}
+                                                className="w-[30%] px-4 py-2 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                                              >
+                                                Add
+                                              </button>
+                                            </div>
+                                            
+                                            {/* Metric Suggestions */}
+                                            {((addMetricQuery && availableMetrics.filter(m => 
+                                              m.name.toLowerCase().includes(addMetricQuery.toLowerCase())
+                                            ).length > 0) || (showAddMetricSuggestions && !addMetricQuery)) && (
+                                              <div className="mt-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg">
+                                                {(addMetricQuery ? availableMetrics.filter(m => 
+                                                  m.name.toLowerCase().includes(addMetricQuery.toLowerCase())
+                                                ) : availableMetrics).map((metric) => (
+                                                  <button
+                                                    key={metric.id}
+                                                    onClick={() => handleAddMetric(metric.name)}
+                                                    className="w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                                                  >
+                                                    <div className="text-sm text-gray-900">{metric.name}</div>
+                                                  </button>
+                                                ))}
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
 
                                                                        {/* Sort Options */}
                                     <div className="mt-6 pt-6 border-t border-gray-200">
@@ -803,21 +1011,6 @@ export default function BenchmarkingPage() {
                                           </button>
                                         </div>
                                       </div>
-                                    </div>
-
-                                    {/* Benchmark Button */}
-                                    <div className="mt-4">
-                                      <button
-                                        onClick={generateBenchmark}
-                                        disabled={!selectedCompany}
-                                        className={`w-full px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
-                                          selectedCompany
-                                            ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                        }`}
-                                      >
-                                        Benchmark
-                                      </button>
                                     </div>
               </div>
             </div>
@@ -873,7 +1066,7 @@ export default function BenchmarkingPage() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div className="text-xs text-gray-700 mt-2 text-center font-medium">
+                                        <div className="text-xs text-gray-700 mt-2 text-center font-medium truncate max-w-16">
                                           {company.name}
                                         </div>
                                       </>
@@ -910,7 +1103,7 @@ export default function BenchmarkingPage() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div className="text-xs text-gray-700 mt-2 text-center font-medium">
+                                        <div className="text-xs text-gray-700 mt-2 text-center font-medium truncate max-w-16">
                                           {company.name}
                                         </div>
                                       </>
@@ -952,7 +1145,7 @@ export default function BenchmarkingPage() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div className="text-xs text-gray-700 mt-2 text-center font-medium">
+                                        <div className="text-xs text-gray-700 mt-2 text-center font-medium truncate max-w-16">
                                           {company.name}
                                         </div>
                                       </>
@@ -989,7 +1182,7 @@ export default function BenchmarkingPage() {
                                             </div>
                                           </div>
                                         </div>
-                                        <div className="text-xs text-gray-700 mt-2 text-center font-medium">
+                                        <div className="text-xs text-gray-700 mt-2 text-center font-medium truncate max-w-16">
                                           {company.name}
                                         </div>
                                       </>
